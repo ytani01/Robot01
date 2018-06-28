@@ -42,19 +42,18 @@ def robot_auto(myid, robot):
         distance = get_distance()
 
         if distance > DISTANCE_NEAR and forward_count < FORWARD_COUNT_MAX:
-            robot.move('forward', 0.1)
+            robot.move('forward', 0.05)
             forward_count += 1
             print('forward_count =', forward_count, '\r')
             continue
 
         if forward_count >= FORWARD_COUNT_MAX:
-            if forward_count > 0:
-                if last_turn == 'left':
-                    last_turn = 'right'
-                else:
-                    last_turn = 'left'
-                    
+            if last_turn == 'left':
+                last_turn = 'right'
+            else:
+                last_turn = 'left'
             robot.move(last_turn, 0.3)
+            robot.move('stop', 1)
             forward_count = 0
             continue
 
@@ -80,9 +79,9 @@ def robot_auto(myid, robot):
                 continue
             
             if last_turn == 'left':
-                robot.move('right', 0.3)
+                robot.move('right', 0.5)
             else:
-                robot.move('left', 0.3)
+                robot.move('left', 0.5)
             robot.move('stop', 1)
             distance = get_distance()
 
