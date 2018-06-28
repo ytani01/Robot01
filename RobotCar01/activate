@@ -1,0 +1,3 @@
+ENVDIR=${HOME}/env
+
+. ${ENVDIR}/bin/activate
