@@ -2,19 +2,18 @@
 
 ## Files
 
-### robocar3: Standalone Robot Car Control App
+### robot_car.py
 
-robocar3.sh
-robocar3.py
+Robot Car Program
 
-### robocar-server2: Robot Car Server
+### RobotCar.py
 
-robocar-server2.sh
-robocar-server2.py
+RobotCar class library
 
-### RobotCar-GoogleAssinstant: Google Assistant Client
+### CR_Servo.py
 
-RobotCar-GoogleAssistant.py
+Continuous Rotation Servo class library
 
-access robocar-server2 to control Robot Car.
+### VL53L0X.py
 
+VL53L0X class library
