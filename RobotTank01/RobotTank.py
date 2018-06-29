@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- encode: utf-8 -*-
 #
 import pigpio
 import VL53L0X
@@ -19,12 +18,12 @@ class RobotTank:
     CONF_FILENAME = 'robot_tank.conf'
     CONF_FILE = os.environ['HOME']+'/'+CONF_FILENAME
 
-#    DEF_SPEED={}
-#    DEF_SPEED['forward'] = [100,100]
-#    DEF_SPEED['backward'] = [100,100]
-#    DEF_SPEED['left'] = [100,100]
-#    DEF_SPEED['right'] = [100,100]
-#    print(DEF_SPEED)
+    DEF_SPEED={}
+    DEF_SPEED['forward'] = [100,100]
+    DEF_SPEED['backward'] = [100,100]
+    DEF_SPEED['left'] = [100,100]
+    DEF_SPEED['right'] = [100,100]
+    print(DEF_SPEED)
     DEF_SPEED_FORWARD = [100,100]
     DEF_SPEED_BACKWARD = [-100, -100]
     DEF_SPEED_LEFT = [-100, 100]
@@ -48,17 +47,16 @@ class RobotTank:
 
         self.move_stop()
 
-        print(self.__dict__)
-
     def end(self):
-        print('set_stop()')
-        self.move_stop()
-        print('self.conf_save()')
-        self.conf_save()
-        print('self.pi.stop()')
-        self.pi.stop()
         print('self.tof.stop_ranging()')
         self.tof.stop_ranging()
+        print('set_stop()')
+        self.move_stop()
+        print('self.pi.stop()')
+        self.pi.stop()
+        print('self.conf_save()')
+        self.conf_save()
+
 
     ###
     def move_stop(self, sec=0):
@@ -96,11 +94,15 @@ class RobotTank:
         print(self.speed_forward, self.speed_backward, self.speed_left, self.speed_right)
     
     def conf_save(self):
-        with open(self.conf_file, 'w', encoding='utf-8') as f:
-            f.write(' '.join(map(str, self.speed_forward))+'\n')
-            f.write(' '.join(map(str, self.speed_backward))+'\n')
-            f.write(' '.join(map(str, self.speed_left))+'\n')
-            f.write(' '.join(map(str, self.speed_right))+'\n')
+        try:
+            with open(self.conf_file, 'w', encoding='utf-8') as f:
+                f.write(' '.join(map(str, self.speed_forward))+'\n')
+                f.write(' '.join(map(str, self.speed_backward))+'\n')
+                f.write(' '.join(map(str, self.speed_left))+'\n')
+                f.write(' '.join(map(str, self.speed_right))+'\n')
+
+        except(FileNotFoundError):
+            print('!! '+conf_file+': not found .. use default value.')
 
 
 #####
@@ -108,11 +110,9 @@ def main1(robot):
     print(MYNAME)
     print(RobotTank.CONF_FILE)
 
-    robot.move_speed(robot.speed_forward)
-    time.sleep(2)
+    robot.move_speed(robot.speed_forward, 1)
     robot.move_break(0.3)
-    robot.move_speed(robot.speed_backward)
-    time.sleep(2)
+    robot.move_speed(robot.speed_backward, 1)
     robot.move_break(0.3)
 
 
@@ -122,4 +122,4 @@ if __name__ == '__main__':
         main1(robot)
     finally:
         print('=== finally ===')
-        robot.end()
+#        robot.end()
