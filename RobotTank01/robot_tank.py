@@ -37,6 +37,62 @@ def get_distance():
     return distance
 
 #####
+def robot_auto(myid, robot):
+    print(myid, 'robot_auto():start', '\r')
+
+    last_turn = 'left'
+    forward_count = 0
+    FORWARD_COUNT_MAX = 10
+
+    robot.move('stop')
+    
+    while True:
+        if not CmdQ.empty():
+            robot.move('break', 0.2)
+            break
+
+        distance = get_distance()
+
+        if distance > DISTANCE_NEAR and forward_count < FORWARD_COUNT_MAX:
+            robot.move('forward', 0.1)
+            forward_count += 1
+            print('forward_count =', forward_count, '\r')
+            continue
+
+        if forward_count >= FORWARD_COUNT_MAX:
+            if last_turn == 'left':
+                last_turn = 'right'
+            else:
+                last_turn = 'left'
+            robot.move(last_turn, 0.7)
+            robot.move('break', 1)
+            forward_count = 0
+            continue
+
+        ## Near
+        robot.move('break', 1)
+        
+        distance = get_distance()
+
+        forward_count = 0
+
+        if last_turn == 'left':
+            last_turn = 'right'
+        else:
+            last_turn = 'left'
+            
+        while distance < DISTANCE_NEAR:
+            print('!', '\r')
+
+            robot.move(last_turn, 0.5)
+            robot.move('break', 1)
+            distance = get_distance()
+
+        print('last_turn =', last_turn, '\r')
+
+    print(myid, 'robot_auto():end', '\r')
+
+#####
 def robot_thread():
     myid = 'robot_thread()'
     print(myid, 'start', '\r')
@@ -65,9 +121,33 @@ def robot_thread():
         if len(cmd) > 0:
             print(myid, '"'+cmd+'"', '\r')
 
-        if move_cmd[cmd] == 'off' or ord(cmd) < 20:
+        if cmd == ' ' or ord(cmd) < 20:
             robot.move('off')
             break
+        
+        ###
+        if cmd == '@':
+            robot_auto(myid, robot)
+
+        if cmd == 'q':
+            sv = robot.change_speed_val(move_stat, idx_left, +5)
+            robot.move(move_stat)
+            print(move_stat, idx_left, sv)
+
+        if cmd == 'z':
+            sv = robot.change_speed_val(move_stat, idx_left, -5)
+            robot.move(move_stat)
+            print(move_stat, idx_left, sv)
+
+        if cmd == 'e':
+            sv = robot.change_speed_val(move_stat, idx_right, +5)
+            robot.move(move_stat)
+            print(move_stat, idx_left, sv)
+
+        if cmd == 'c':
+            sv = robot.change_speed_val(move_stat, idx_right, -5)
+            robot.move(move_stat)
+            print(move_stat, idx_left, sv)
 
         ###
         if cmd in move_cmd.keys():

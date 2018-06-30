@@ -15,6 +15,9 @@ class RobotTank:
     DEF_CONF_FILENAME = 'robot_tank.csv'
     DEF_CONF_FILE = './' + DEF_CONF_FILENAME
 
+    MAX_SPEED_VAL = 100
+    MIN_SPEED_VAL = -MAX_SPEED_VAL
+    
     DEF_SPEED_VAL={}
     DEF_SPEED_VAL['off'] 	= [0,0]
     DEF_SPEED_VAL['stop'] 	= [0,0]
@@ -41,15 +44,15 @@ class RobotTank:
         self.move_stop()
 
     def __del__(self):
-        print('set_stop()')
+        print('set_stop()', '\r')
         self.move_stop()
-        print('self.pi.stop()')
+        print('self.pi.stop()', '\r')
         self.pi.stop()
-        print('self.conf_save()')
+        print('self.conf_save()', '\r')
         self.conf_save()
 
 
-    ###
+    ### move command
     def move(self, key, sec=0):
         if key == 'break':
             self.move_break()
@@ -60,7 +63,7 @@ class RobotTank:
 
         time.sleep(sec)
             
-    ###
+    ### move primitive
     def move_stop(self, sec=0):
         self.dc_mtr.set_stop(sec)
 
@@ -68,17 +71,31 @@ class RobotTank:
         self.dc_mtr.set_break(sec)
 
     def move_speed(self, speed, sec=0):
-        print('speed=', speed)
+        #print('speed=', speed)
         self.dc_mtr.set_speed(speed, sec)
 
+    ### change speed value
+    def change_speed_val(self, key, idx, d_val):
+        new_val = self.speed_val[key][idx] + d_val
+        if new_val < RobotTank.MIN_SPEED_VAL:
+            new_val = RobotTank.MIN_SPEED_VAL
+        if new_val > RobotTank.MAX_SPEED_VAL:
+            new_val = RobotTank.MAX_SPEED_VAL
+        self.speed_val[key][idx] = new_val
+        
+        self.conf_save(self.conf_file)
+        return self.speed_val[key][idx]
 
-    ###
+    ### conf_file
     def set_conf_file(self, conf_file=''):
         if conf_file == '':
             conf_file = RobotTank.DEF_CONF_FILE
         self.conf_file = conf_file
 
     def conf_load(self, conf_file=''):
+        if conf_file == '':
+            conf_file = self.conf_file
+        
         if conf_file == '':
             conf_file = RobotTank.DEF_CONF_FILE
 
@@ -99,8 +116,11 @@ class RobotTank:
     
     def conf_save(self, conf_file=''):
         if conf_file == '':
+            conf_file = self.conf_file
+        
+        if conf_file == '':
             conf_file = RobotTank.DEF_CONF_FILE
-            
+
         try:
             with open(self.conf_file, 'w', encoding='utf-8') as f:
                 csv_writer = csv.writer(f, lineterminator='\n')
