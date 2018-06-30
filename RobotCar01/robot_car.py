@@ -20,8 +20,16 @@ DISTANCE_NEAR2 = 100	# mm
 
 #####
 def get_distance():
+    N_MAX = 70
+    
     distance = Tof.get_distance()
-    print('distance: %d mm' % distance, '\r')
+    print('distance: %d mm ' % distance, end='')
+    n = int(distance/10)
+    if n > N_MAX:
+        n = N_MAX
+    for i in range(n):
+        print('*', end='')
+    print('\r')
     return distance
 
 #####
