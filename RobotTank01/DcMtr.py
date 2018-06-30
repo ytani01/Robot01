@@ -4,7 +4,7 @@
 #
 import pigpio
 import time
-%
+
 class DcMtr:
     PWM_FREQ = 50
     PWM_RANGE = 100
@@ -13,8 +13,8 @@ class DcMtr:
         self.pi = pi
         self.pin = pin
         self.n = len(pin)
-        self.pwm_freq = []
-        self.pwm_range = []
+        self.pwm_freq = list(range(self.n))
+        self.pwm_range = list(range(self.n))
 
         for i in range(self.n):
             pi.set_mode(pin[i], pigpio.OUTPUT)
@@ -36,7 +36,7 @@ class DcMtr:
         self.pi.set_PWM_dutycycle(self.pin[1], in2)
 
     def set_speed(self, speed, sec=0):
-        if speed < -DcMtr.:
+        if speed < -DcMtr.PWM_RANGE:
             speed = -DcMtr.PWM_RANGE
         if speed > DcMtr.PWM_RANGE:
             speed = DcMtr.PWM_RANGE
@@ -60,7 +60,7 @@ class DcMtrN:
     def __init__(self, pi, pin):
         self.pi = pi
         self.n = len(pin)
-        self.dc_mtr = []
+        self.dc_mtr = list(range(self.n))
 
         for i in range(self.n):
             self.dc_mtr[i] = DcMtr(self.pi, pin[i])
@@ -88,13 +88,13 @@ def main1(pi):
     dc_mtr = DcMtrN(pi, pin)
     print(dc_mtr.n)
     for i in range(dc_mtr.n):
-        print(dc_mtr.dc_mtr[i].freq)
-        print(dc_mtr.dc_mtr[i].range)
+        print(dc_mtr.dc_mtr[i].pwm_freq)
+        print(dc_mtr.dc_mtr[i].pwm_range)
 
     try:
-        dc_mtr.set_speed([100,30],2)
+        dc_mtr.set_speed([100,30],1)
         dc_mtr.set_break(0.3)
-        dc_mtr.set_speed([-30,-100],2)
+        dc_mtr.set_speed([-30,-100],1)
         dc_mtr.set_break(0.3)
     finally:
         print('dc_mtr.set_stop()')
