@@ -137,7 +137,7 @@ class RobotTank:
 
 #####
 def main():
-    PIN_DC_MOTOR = [[13,12],[17,18]]
+    PIN_DC_MOTOR = [[17,18], [13,12]]
 
     print(MYNAME)
 
