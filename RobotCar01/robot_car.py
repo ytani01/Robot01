@@ -15,6 +15,7 @@ CmdQ = queue.Queue()
 Tof = None
 TofTiming = 0
 
+DISTANCE_FAR = 1500
 DISTANCE_NEAR = 300	# mm
 DISTANCE_NEAR2 = 100	# mm
 
@@ -52,7 +53,7 @@ def robot_auto(myid, robot):
         if distance > DISTANCE_NEAR and forward_count < FORWARD_COUNT_MAX:
             robot.move('forward', 0.05)
             forward_count += 1
-            print('forward_count =', forward_count, '\r')
+            #print('forward_count =', forward_count, '\r')
             continue
 
         if forward_count >= FORWARD_COUNT_MAX:
@@ -60,8 +61,9 @@ def robot_auto(myid, robot):
                 last_turn = 'right'
             else:
                 last_turn = 'left'
-            robot.move(last_turn, 0.3)
-            robot.move('stop', 1)
+            robot.move(last_turn, 0.2)
+            if distance < DISTANCE_FAR:
+                robot.move('stop', 1)
             forward_count = 0
             continue
 
@@ -73,6 +75,9 @@ def robot_auto(myid, robot):
 
         while distance < DISTANCE_NEAR:
             print('!', '\r')
+            if not CmdQ.empty():
+                break
+            
             if distance < DISTANCE_NEAR2:
                 print('!!', '\r')
                 robot.move('backward', 0.3)
