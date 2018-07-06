@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -x
 #
 ENVDIR=${HOME}/env
 ACTIVATE_CMD=${ENVDIR}/bin/activate
@@ -11,7 +11,9 @@ if [ ! -f ${ACTIVATE_CMD} ]; then
   exit 1
 fi
 
+set +x
 . ${ACTIVATE_CMD}
+set -x
 
 python -V
 
