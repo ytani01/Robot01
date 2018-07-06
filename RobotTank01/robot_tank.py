@@ -2,6 +2,7 @@
 #
 
 import RobotTank
+import ServoMtr
 import VL53L0X
 
 import threading
@@ -10,17 +11,43 @@ import readchar
 
 import time
 
+# DC Motor
 PIN_DC_MOTOR = [[17, 18], [13, 12]]
 
+# Servo
+Sm = None
+PIN_SERVO = 15
+
+SM_CENTER = 1400
+SM_LEFT = 2300
+SM_RIGHT = 500
+
+# Command queue
 CmdQ = queue.Queue()
 
+# distance
 Tof = None
 TofTimeing = 0
 
+DISTANCE_FAR	= 1000	# mm
 DISTANCE_NEAR	= 300	# mm
 DISTANCE_NEAR2	= 100	# mm
 
 #####
+def look(pulse):
+    global Sm
+
+    distance = DISTANCE_FAR
+    
+    for p in pulse:
+        Sm.set_pulse(p)
+        d = get_distance()
+        if d < distance:
+            distance = d
+
+    print('look():', distance, 'mm', '\r')
+    return distance
+
 def get_distance():
     N_MAX = 70
 
@@ -51,7 +78,8 @@ def robot_auto(myid, robot):
             robot.move('break', 0.2)
             break
 
-        distance = get_distance()
+        #distance = get_distance()
+        distance = look([SM_CENTER - 20, SM_CENTER + 20, SM_CENTER])
 
         if distance > DISTANCE_NEAR and forward_count < FORWARD_COUNT_MAX:
             robot.move('forward', 0.1)
@@ -107,7 +135,9 @@ def robot_thread():
     move_cmd['w'] = 'forward'
     move_cmd['x'] = 'backward'
     move_cmd['a'] = 'left'
+    move_cmd['A'] = 'left1'
     move_cmd['d'] = 'right'
+    move_cmd['D'] = 'right1'
     move_cmd[' '] = 'off'
 
     move_stat = 'stop'
@@ -178,8 +208,12 @@ def readchar_thread():
 
 #####
 def main():
+    global Sm
     global Tof
     global TofTiming
+
+    Sm = ServoMtr.SG90(PIN_SERVO)
+    Sm.set_pulse(SM_CENTER)
 
     Tof = VL53L0X.VL53L0X()
     Tof.start_ranging(VL53L0X.VL53L0X_BETTER_ACCURACY_MODE)
