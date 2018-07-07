@@ -1,28 +1,8 @@
 #Key,Left Motor,Right Motor
-<<<<<<< HEAD
-left,1410,1415
-right,1545,1550
+stop,1470,1480
+left,1400,1415
 break,1455,1435
-backward,1380,1585
+forward,1605,1355
 off,0,0
-forward,1575,1370
-stop,1485,1485
-=======
-<<<<<<< HEAD
-backward,1290,1565
-forward,1615,1335
-left,1355,1370
-break,1455,1435
-stop,1465,1425
-right,1565,1525
-off,0,0
-=======
-right,1565,1610
-forward,1755,1100
-stop,1450,1485
-left,1320,1375
-off,0,0
-break,1455,1435
-backward,1240,1700
->>>>>>> 9d114da8c16b1c531d8b7ca96da62e6079137da7
->>>>>>> 17e3962932da67d4e71f693aa277a5e7ca40f531
+backward,1260,1710
+right,1565,1555
