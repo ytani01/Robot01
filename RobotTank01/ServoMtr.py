@@ -45,7 +45,7 @@ class SG90:
         self.cur_pulse = pulse
 
         self.pi.set_servo_pulsewidth(self.pin, self.cur_pulse)
-        time.sleep(abs(def_pulse) * SG90.SEC_PULSE)
+        time.sleep(abs(def_pulse) * SG90.SEC_PULSE + 0.2)
 
         if sec > 0:
             time.sleep(sec)

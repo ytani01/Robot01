@@ -34,18 +34,30 @@ DISTANCE_NEAR	= 300	# mm
 DISTANCE_NEAR2	= 100	# mm
 
 #####
+def look_center():
+    return look([SM_CENTER - 200, SM_CENTER + 200, SM_CENTER])
+
+def look_left():
+    return look([SM_LEFT - 200, SM_LEFT - 100, SM_LEFT])
+
+def look_right():
+    return look([SM_RIGHT + 200, SM_RIGHT + 100, SM_RIGHT])
+
 def look(pulse):
     global Sm
 
     distance = DISTANCE_FAR
-    
+
     for p in pulse:
         Sm.set_pulse(p)
+        time.sleep(0.1)
         d = get_distance()
         if d < distance:
             distance = d
-
-    print('look():', distance, 'mm', '\r')
+        
+        print('look(): pulse', p, distance, 'mm', '\r')
+        #time.sleep(1)
+        
     return distance
 
 def get_distance():
@@ -79,7 +91,7 @@ def robot_auto(myid, robot):
             break
 
         #distance = get_distance()
-        distance = look([SM_CENTER - 20, SM_CENTER + 20, SM_CENTER])
+        distance = look_center()
 
         if distance > DISTANCE_NEAR and forward_count < FORWARD_COUNT_MAX:
             robot.move('forward', 0.1)
@@ -222,6 +234,12 @@ def main():
         TofTiming = 20000
     print("TofTiming = %d ms" % (TofTiming / 1000))
     get_distance()
+
+    look_left()
+    time.sleep(1)
+    look_right()
+    time.sleep(1)
+    look_center()
 
     robot_th = threading.Thread(target=robot_thread, daemon=True)
     robot_th.start()
