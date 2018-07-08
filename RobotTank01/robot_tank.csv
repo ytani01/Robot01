@@ -1,22 +1,10 @@
 #Key,Left Motor,Right Motor
-<<<<<<< HEAD
-stop,0,0
-right1,95,0
-forward,60,65
-off,0,0
-right,95,-100
-backward,-60,-90
-break,0,0
-left,-100,100
-left1,0,100
-=======
-right,95,-100
-break,0,0
-backward,-60,-90
-left1,0,100
-stop,0,0
 forward,50,75
-left,-100,100
-off,0,0
+backward,-60,-90
+right,95,-100
 right1,95,0
->>>>>>> 06677052d4721e3a685322b56e7ea9560429d381
+left,-100,100
+break,0,0
+left1,0,100
+stop,0,0
+off,0,0
