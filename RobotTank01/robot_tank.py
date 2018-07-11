@@ -2,6 +2,7 @@
 #
 
 import RobotTank
+import ServoMtr
 import VL53L0X
 
 import threading
@@ -10,17 +11,70 @@ import readchar
 
 import time
 
+# DC Motor
 PIN_DC_MOTOR = [[17, 18], [13, 12]]
 
+# Servo
+Sm = None
+PIN_SERVO = 15
+
+SM_CENTER = 1400
+SM_LEFT = 2300
+SM_RIGHT = 500
+
+# Command queue
 CmdQ = queue.Queue()
 
+# distance
 Tof = None
 TofTimeing = 0
 
+DISTANCE_FAR	= 1000	# mm
 DISTANCE_NEAR	= 300	# mm
 DISTANCE_NEAR2	= 100	# mm
 
 #####
+def left_or_right():
+    tm = time.time()
+
+    if int(tm * 100) % 2 == 0:
+        return ['left', 'right']
+    else:
+        return ['right', 'left']
+
+def look_center():
+    tm = time.time()
+
+    if int(tm * 100) % 2 == 0:
+        return look([SM_CENTER - 200, SM_CENTER + 200, SM_CENTER])
+    else:
+        return look([SM_CENTER + 200, SM_CENTER - 200, SM_CENTER])
+
+def look_left():
+    return look([SM_LEFT - 200, SM_LEFT - 100, SM_LEFT])
+
+def look_right():
+    return look([SM_RIGHT + 200, SM_RIGHT + 100, SM_RIGHT])
+
+def look(pulse):
+    global Sm
+
+    distance = DISTANCE_FAR
+
+    for p in pulse:
+        Sm.set_pulse(p)
+        time.sleep(0.1)
+        d = get_distance()
+        if d < distance:
+            distance = d
+        
+        print('look(): pulse', p, distance, 'mm', '\r')
+        #time.sleep(1)
+        if distance < DISTANCE_NEAR:
+            break
+        
+    return distance
+
 def get_distance():
     N_MAX = 70
 
@@ -48,10 +102,12 @@ def robot_auto(myid, robot):
     
     while True:
         if not CmdQ.empty():
-            robot.move('break', 0.2)
+            #robot.move('break', 0.2)
+            robot.move('stop')
             break
 
-        distance = get_distance()
+        #distance = get_distance()
+        distance = look_center()
 
         if distance > DISTANCE_NEAR and forward_count < FORWARD_COUNT_MAX:
             robot.move('forward', 0.1)
@@ -64,15 +120,18 @@ def robot_auto(myid, robot):
                 last_turn = 'right'
             else:
                 last_turn = 'left'
-            robot.move(last_turn, 0.7)
-            robot.move('break', 1)
+            robot.move(last_turn, 0.5)
+            #robot.move('break', 1)
+            robot.move('stop', 0.5)
             forward_count = 0
             continue
 
         ## Near
-        robot.move('break', 1)
+        #robot.move('break', 1)
+        robot.move('stop', 0.5)
         
-        distance = get_distance()
+        #distance = get_distance()
+        distance = look_center()
 
         forward_count = 0
 
@@ -84,9 +143,16 @@ def robot_auto(myid, robot):
         while distance < DISTANCE_NEAR:
             print('!', '\r')
 
-            robot.move(last_turn, 0.5)
-            robot.move('break', 1)
-            distance = get_distance()
+            if not CmdQ.empty():
+                #robot.move('break', 0.2)
+                robot.move('stop')
+                break
+            
+            robot.move(last_turn, 0.4)
+            #robot.move('break', 1)
+            robot.move('stop', 0.5)
+            #distance = get_distance()
+            distance = look_center()
 
         print('last_turn =', last_turn, '\r')
 
@@ -107,7 +173,9 @@ def robot_thread():
     move_cmd['w'] = 'forward'
     move_cmd['x'] = 'backward'
     move_cmd['a'] = 'left'
+    move_cmd['A'] = 'left1'
     move_cmd['d'] = 'right'
+    move_cmd['D'] = 'right1'
     move_cmd[' '] = 'off'
 
     move_stat = 'stop'
@@ -178,8 +246,14 @@ def readchar_thread():
 
 #####
 def main():
+    global Sm
     global Tof
     global TofTiming
+
+    Sm = ServoMtr.SG90(PIN_SERVO)
+    Sm.set_pulse(SM_RIGHT)
+    Sm.set_pulse(SM_LEFT)
+    Sm.set_pulse(SM_CENTER)
 
     Tof = VL53L0X.VL53L0X()
     Tof.start_ranging(VL53L0X.VL53L0X_BETTER_ACCURACY_MODE)

@@ -28,11 +28,16 @@ class RobotTank:
     DEF_SPEED_VAL['right'] 	= [100,-100]
     print(DEF_SPEED_VAL)
 
-    def __init__(self, pin, conf_file=''):
+    def __init__(self, pin, pi='', conf_file=''):
         self.pin = pin
         self.n = len(pin)
 
-        self.pi = pigpio.pi()
+        if type(pi) == pigpio.pi:
+            self.pi = pi
+            self.mypi = False
+        else:
+            self.pi = pigpio.pi()
+            self.mypi = True
 
         self.speed_val = RobotTank.DEF_SPEED_VAL
 
@@ -46,8 +51,9 @@ class RobotTank:
     def __del__(self):
         print('set_stop()', '\r')
         self.move_stop()
-        print('self.pi.stop()', '\r')
-        self.pi.stop()
+        if self.mypi:
+            print('self.pi.stop()', '\r')
+            self.pi.stop()
         print('self.conf_save()', '\r')
         self.conf_save()
 
