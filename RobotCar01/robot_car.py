@@ -15,9 +15,9 @@ CmdQ = queue.Queue()
 Tof = None
 TofTiming = 0
 
-DISTANCE_FAR = 1500
-DISTANCE_NEAR = 300	# mm
-DISTANCE_NEAR2 = 100	# mm
+DISTANCE_FAR = 700
+DISTANCE_NEAR = 350	# mm
+DISTANCE_NEAR2 = 150	# mm
 
 #####
 def get_distance():
@@ -33,6 +33,25 @@ def get_distance():
     print('\r')
     return distance
 
+#####
+def next_turn_random(last_turn):
+    r = int(time.time() * 100) % 10
+    if r < 8:
+        if last_turn == 'left':
+            next_turn = 'right'
+        else:
+            next_turn = 'left'
+        return next_turn
+    else:
+        r = int(time.time() * 100) % 2
+        if r == 0:
+            next_turn = 'left'
+        else:
+            next_turn = 'right'
+
+    print('next_turn_random(): next_turn =', next_turn, '\r')
+    return next_turn
+    
 #####
 def robot_auto(myid, robot):
     print(myid, 'robot_auto():start', '\r')
@@ -57,10 +76,7 @@ def robot_auto(myid, robot):
             continue
 
         if forward_count >= FORWARD_COUNT_MAX:
-            if last_turn == 'left':
-                last_turn = 'right'
-            else:
-                last_turn = 'left'
+            last_turn = next_turn_random(last_turn)
             robot.move(last_turn, 0.2)
             if distance < DISTANCE_FAR:
                 robot.move('stop', 1)
@@ -73,7 +89,8 @@ def robot_auto(myid, robot):
         
         forward_count = 0
 
-        while distance < DISTANCE_NEAR:
+        next_turn = next_turn_random(last_turn)
+        while distance < DISTANCE_NEAR + 30:
             print('!', '\r')
             if not CmdQ.empty():
                 break
@@ -81,27 +98,15 @@ def robot_auto(myid, robot):
             if distance < DISTANCE_NEAR2:
                 print('!!', '\r')
                 robot.move('backward', 0.3)
-                if last_turn == 'left':
-                    last_turn = 'right'
-                else:
-                    last_turn = 'left'
-                robot.move(last_turn, 1.0)
-
-                robot.move('stop', 1)
+                #robot.move('stop', 1)
                 distance = get_distance()
                 continue
             
-            if last_turn == 'left':
-                robot.move('right', 0.5)
-            else:
-                robot.move('left', 0.5)
+            robot.move(next_turn, 0.5)
+            last_turn = next_turn
             robot.move('stop', 1)
             distance = get_distance()
 
-        if last_turn == 'left':
-            last_turn = 'right'
-        else:
-            last_turn = 'left'
         print('last_turn =', last_turn, '\r')
             
 
