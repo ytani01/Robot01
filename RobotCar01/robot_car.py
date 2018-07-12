@@ -77,7 +77,7 @@ def robot_auto(myid, robot):
 
         if forward_count >= FORWARD_COUNT_MAX:
             last_turn = next_turn_random(last_turn)
-            robot.move(last_turn, 0.2)
+            robot.move(last_turn, 0.1)
             if distance < DISTANCE_FAR:
                 robot.move('stop', 1)
             forward_count = 0
