@@ -34,8 +34,21 @@ DISTANCE_NEAR	= 300	# mm
 DISTANCE_NEAR2	= 100	# mm
 
 #####
+def left_or_right():
+    tm = time.time()
+
+    if int(tm * 100) % 2 == 0:
+        return ['left', 'right']
+    else:
+        return ['right', 'left']
+
 def look_center():
-    return look([SM_CENTER - 200, SM_CENTER + 200, SM_CENTER])
+    tm = time.time()
+
+    if int(tm * 100) % 2 == 0:
+        return look([SM_CENTER - 200, SM_CENTER + 200, SM_CENTER])
+    else:
+        return look([SM_CENTER + 200, SM_CENTER - 200, SM_CENTER])
 
 def look_left():
     return look([SM_LEFT - 200, SM_LEFT - 100, SM_LEFT])
@@ -57,6 +70,8 @@ def look(pulse):
         
         print('look(): pulse', p, distance, 'mm', '\r')
         #time.sleep(1)
+        if distance < DISTANCE_NEAR:
+            break
         
     return distance
 
@@ -87,7 +102,8 @@ def robot_auto(myid, robot):
     
     while True:
         if not CmdQ.empty():
-            robot.move('break', 0.2)
+            #robot.move('break', 0.2)
+            robot.move('stop')
             break
 
         #distance = get_distance()
@@ -104,15 +120,18 @@ def robot_auto(myid, robot):
                 last_turn = 'right'
             else:
                 last_turn = 'left'
-            robot.move(last_turn, 0.7)
-            robot.move('break', 1)
+            robot.move(last_turn, 0.5)
+            #robot.move('break', 1)
+            robot.move('stop', 0.5)
             forward_count = 0
             continue
 
         ## Near
-        robot.move('break', 1)
+        #robot.move('break', 1)
+        robot.move('stop', 0.5)
         
-        distance = get_distance()
+        #distance = get_distance()
+        distance = look_center()
 
         forward_count = 0
 
@@ -124,9 +143,16 @@ def robot_auto(myid, robot):
         while distance < DISTANCE_NEAR:
             print('!', '\r')
 
-            robot.move(last_turn, 0.5)
-            robot.move('break', 1)
-            distance = get_distance()
+            if not CmdQ.empty():
+                #robot.move('break', 0.2)
+                robot.move('stop')
+                break
+            
+            robot.move(last_turn, 0.4)
+            #robot.move('break', 1)
+            robot.move('stop', 0.5)
+            #distance = get_distance()
+            distance = look_center()
 
         print('last_turn =', last_turn, '\r')
 
@@ -225,6 +251,8 @@ def main():
     global TofTiming
 
     Sm = ServoMtr.SG90(PIN_SERVO)
+    Sm.set_pulse(SM_RIGHT)
+    Sm.set_pulse(SM_LEFT)
     Sm.set_pulse(SM_CENTER)
 
     Tof = VL53L0X.VL53L0X()
@@ -234,12 +262,6 @@ def main():
         TofTiming = 20000
     print("TofTiming = %d ms" % (TofTiming / 1000))
     get_distance()
-
-    look_left()
-    time.sleep(1)
-    look_right()
-    time.sleep(1)
-    look_center()
 
     robot_th = threading.Thread(target=robot_thread, daemon=True)
     robot_th.start()

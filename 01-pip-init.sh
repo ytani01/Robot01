@@ -2,7 +2,7 @@
 #
 ENVDIR=${HOME}/env
 ACTIVATE_CMD=${ENVDIR}/bin/activate
-PIP_PKGS="setuptools wheel pigpio smbus2 flask"
+PIP_PKGS="setuptools wheel pigpio smbus2 readchar flask"
 
 cd
 
