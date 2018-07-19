@@ -13,6 +13,8 @@ import threading
 
 #####
 class RobotCar(threading.Thread):
+    CHCMD_END = ' '
+    
     DEF_CONF_FILENAME = 'robot_car.csv'
     #DEF_CONF_FILE = os.environ['HOME']+'/'+DEF_CONF_FILENAME
     DEF_CONF_FILE = './'+DEF_CONF_FILENAME
@@ -68,11 +70,13 @@ class RobotCar(threading.Thread):
         print('RobotCar: init():done')
 
     def __del__(self):
+        '''
         print('=== RobotCar self.__del__() ===')
         print('RobotCar self.move(\'stop\')')
         self.move('stop')
         print('RobotCar self.move(\'off\')')
         self.move('off')
+        '''
         if self.mypi:
             print('RobotCar self.pi.stop()')
             self.pi.stop()
@@ -80,12 +84,12 @@ class RobotCar(threading.Thread):
 
     ### cmdq
     def send_cmd(self, cmd):
-        print('send_cmd(): cmd=', cmd)
+        print('send_cmd(\''+str(cmd)+'\')')
         self.cmdq.put(cmd)
 
     def recv_cmd(self):
         cmd = self.cmdq.get()
-        print('recv_cmd(): cmd=', cmd)
+        print('recv_cmd(\''+str(cmd)+'\')')
         return cmd
 
     def cmd_empty(self):
@@ -144,31 +148,41 @@ class RobotCar(threading.Thread):
                                      self.pulse_val[k][0], \
                                      self.pulse_val[k][1]])
 
-    ### Thread
-    def run(self):
+    ### Control
+    def exec_cmd(self, cmd):
+        print('exec_cmd(\''+str(cmd)+'\')')
+
         [idx_left, idx_right] = [0, 1]
         
+        if cmd in self.move_cmd.keys():
+            print(cmd, ':', self.move_cmd[cmd])
+            self.move(self.move_cmd[cmd])
+            return cmd
+        
+        if cmd == 'z':
+            self.increment_pulse_val(idx_left, -5)
+        if cmd == 'q':
+            self.increment_pulse_val(idx_left, +5)
+        if cmd == 'e':
+            self.increment_pulse_val(idx_right, -5)
+        if cmd == 'c':
+            self.increment_pulse_val(idx_right, +5)
+
+        if cmd == '.':
+            time.sleep(0.5)
+            
+        return cmd
+            
+    ### Thread
+    def run(self):
         while True:
             cmd = self.recv_cmd()
-            print('cmd:', cmd)
-            if cmd in self.move_cmd.keys():
-                print(cmd, ':', self.move_cmd[cmd])
-                self.move(self.move_cmd[cmd])
-            else:
-                if cmd == 'z':
-                    self.increment_pulse_val(idx_left, -5)
-                if cmd == 'q':
-                    self.increment_pulse_val(idx_left, +5)
-                if cmd == 'e':
-                    self.increment_pulse_val(idx_right, -5)
-                if cmd == 'c':
-                    self.increment_pulse_val(idx_right, +5)
-                    
-            if cmd == ' ' or cmd == 'off':
+            self.exec_cmd(cmd)
+            if cmd == RobotCar.CHCMD_END:
                 break
 
             time.sleep(0.01)
-            
+
 #####
 def main():
     pin = [13, 12]
@@ -179,7 +193,10 @@ def main():
     
     print('send_cmd(x)')
     robot.send_cmd('x')
+    time.sleep(0.2)
+    robot.send_cmd('s')
     time.sleep(1)
+
     print('move(forward)')
     robot.move('forward', 0.2)
     robot.move('stop', 1)
@@ -188,7 +205,7 @@ def main():
     robot.move('stop', 1)
 
     print('send_cmd( )')
-    robot.send_cmd(' ')
+    robot.send_cmd(RobotCar.CHCMD_END)
 
     print('join')
     robot.join()

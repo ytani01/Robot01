@@ -9,10 +9,9 @@ import sys
 
 #####
 class AutoRobotCar(RobotCar.RobotCar):
-    Tof = None
-    TofTiming = 0
-    
     def __init__(self, pin, pi='', conf_file=''):
+        self.tof = None
+        self.tof_timing = 0
         self.init_VL53L0X()
 
         print('AutoRobotCar: super().__init__(pin, pi, conf_file)')
@@ -20,17 +19,17 @@ class AutoRobotCar(RobotCar.RobotCar):
         print('AutoRobotCar: init():done')
 
     def init_VL53L0X(self):
-        AutoRobotCar.Tof = VL53L0X.VL53L0X()
-        AutoRobotCar.Tof.start_ranging(VL53L0X.VL53L0X_BETTER_ACCURACY_MODE)
-        AutoRobotCar.TofTiming = AutoRobotCar.Tof.get_timing()
-        if AutoRobotCar.TofTiming < 20000:
-            AutoRobotCar.TofTiming = 20000
-        print('TofTiming = %d ms' % (AutoRobotCar.TofTiming/1000))
+        self.tof = VL53L0X.VL53L0X()
+        self.tof.start_ranging(VL53L0X.VL53L0X_BETTER_ACCURACY_MODE)
+        self.tof_timing = self.tof.get_timing()
+        if self.tof_timing < 20000:
+            self.tof_timing = 20000
+        print('TofTiming = %d ms' % (self.tof_timing/1000))
         
     def get_distance(self):
         N_MAX = 70
 
-        distance = AutoRobotCar.Tof.get_distance()
+        distance = self.tof.get_distance()
         print('%5.1fcm ' % (distance/10), end='')
         n = int(distance/10)
         if n > N_MAX:
@@ -80,15 +79,15 @@ class AutoRobotCar(RobotCar.RobotCar):
                 break
 
             distance = self.get_distance()
-
             if distance > DISTANCE_NEAR and forward_count < FORWARD_COUNT_MAX:
                 self.move('forward', 0.05)
                 forward_count += 1
                 continue
 
-            if forward_count > FORWARD_COUNT_MAX:
+            if forward_count >= FORWARD_COUNT_MAX:
                 left_or_right = next_turn_random(left_or_right)
-                self.move(left_or_right, 0.1)
+                print(left_or_right)
+                self.move(left_or_right, 0.2)
                 if distance < DISTANCE_FAR:
                     self.move('stop', 0.5)
                 forward_count = 0
@@ -118,9 +117,14 @@ class AutoRobotCar(RobotCar.RobotCar):
 
         print('auto(): end')
 
-    ### Thread
-    def run(self):
-        self.auto()
+    ### Control
+    def exec_cmd(self, cmd):
+        if cmd == '@':
+            self.auto()
+        else:
+            super().exec_cmd(cmd)
+
+        return cmd
                 
 #####
 def main():
@@ -129,14 +133,38 @@ def main():
 
     robot = AutoRobotCar(pin, pi)
     robot.start()
+    time.sleep(1)
 
-    count = 10
+    robot.send_cmd('a')
+    time.sleep(0.2)
+    robot.send_cmd('s')
+    time.sleep(1)
+    robot.send_cmd('d')
+    time.sleep(0.2)
+    robot.send_cmd('s')
+    time.sleep(1)
+    
+    robot.send_cmd('@')
+    count = 7
     c = 0
     for c in range(count, 0, -1):
         print('### count:', c)
         time.sleep(1)
     print('### count: 0')
-    robot.send_cmd('stop')
+
+    robot.send_cmd('s')
+    time.sleep(1)
+
+    robot.send_cmd('a')
+    time.sleep(0.2)
+    robot.send_cmd('s')
+    time.sleep(1)
+    robot.send_cmd('d')
+    time.sleep(0.2)
+    robot.send_cmd('s')
+    time.sleep(1)
+
+    robot.send_cmd(AutoRobotCar.CHCMD_END)
     robot.join()
 
 if __name__ == '__main__':

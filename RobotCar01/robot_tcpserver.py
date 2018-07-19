@@ -9,82 +9,34 @@ import time
 import sys
 
 DEF_PORT = 12345
-
 PIN_CR_SERVO = [13, 12]
 
+Robot = AutoRobotCar.AutoRobotCar(PIN_CR_SERVO)
 
-def robot_thread():
-    global RobotServer
+##### Global function
+def robot_send_cmd(cmd):
+    global Robot
+
+    Robot.send_cmd(cmd)
     
-    myid = "robot_thread()"
-    print(myid, 'start', '\r')
 
-    robot = AutoRobotCar.AutoRobotCar(PIN_CR_SERVO)
-
-    [idx_left, idx_right] = [0, 1]
-
-    move_cmd = {}
-    move_cmd['s'] = 'stop'
-    move_cmd['S'] = 'break'
-    move_cmd['w'] = 'forward'
-    move_cmd['x'] = 'backward'
-    move_cmd['a'] = 'left'
-    move_cmd['d'] = 'right'
-
-    move_stat = 'stop'
-    robot.move('stop')
-    
-    while True:
-        cmd = CmdQ.get()
-        print('distance: %d mm' % get_distance(), '\r')
-
-        if len(cmd) > 0:
-            print(myid, '"'+cmd+'"', '\r')
-
-        if cmd == ' ' or ord(cmd) < 20:
-            robot.move('off')
-            break
-
-        ###
-        if cmd == '@':
-            robot_auto(myid, robot)
-
-        if cmd == 'z':
-            robot.increment_pulse_val(move_stat, idx_left, -5)
-        if cmd == 'q':
-            robot.increment_pulse_val(move_stat, idx_left, 5)
-        if cmd == 'e':
-            robot.increment_pulse_val(move_stat, idx_right, -5)
-        if cmd == 'c':
-            robot.increment_pulse_val(move_stat, idx_right, 5)
-
-        ###
-        if cmd in move_cmd.keys():
-            move_stat = move_cmd[cmd]
-            print(myid, cmd, '->', move_stat, '\r')
-            robot.move(move_stat)
-
-    robot = None
-    print(myid, 'end', '\r')
-           
-    
-#####
+##### Server Class
 class MyTcpHandler(socketserver.StreamRequestHandler):
+
     def __init__(self, request, client_address, server):
-        net_lock = ''
-        
-        if net_lock == '':
-            self.wfile_lock = threading.Lock()
-        else:
-            self.wfile_lock = net_lock
-        
+        global Robot
+
+        self.robot = Robot
+        print('client_address =', client_address)
+        ## Lock
+        #self.wfile_lock = threading.Lock()
         return socketserver.StreamRequestHandler.__init__(self, \
                                                           request, \
                                                           client_address, \
                                                           server)
 
     def net_write(self, msg):
-        self.wfile_lock.acquire()
+        #self.wfile_lock.acquire()
 
         try:
             self.wfile.write(msg)
@@ -92,15 +44,13 @@ class MyTcpHandler(socketserver.StreamRequestHandler):
             print('net_write(): Error!!!')
             pass
 
-        self.wfile_lock.release()
+        #self.wfile_lock.release()
         
     def setup(self):
         return socketserver.StreamRequestHandler.setup(self)
 
     def handle(self):
         print('***', __class__.__name__+'.handle()')
-
-        self.net_write('#OK\r\n'.encode('utf-8'))
 
         # Telnet Protocol
         #
@@ -110,8 +60,16 @@ class MyTcpHandler(socketserver.StreamRequestHandler):
         # 0x22 LINEMODE
         self.net_write(b'\xff\xfd\x22')
 
-        while True:
-            net_data = self.request.recv(512)
+        self.net_write('# Ready\r\n'.encode('utf-8'))
+
+        flag_continue = True
+        while flag_continue:
+            try:
+                net_data = self.request.recv(512)
+            except ConnectionResetError:
+                #flag_continue = False
+                return
+
             print('net_data:', net_data)
             if len(net_data) == 0:
                 break
@@ -119,19 +77,23 @@ class MyTcpHandler(socketserver.StreamRequestHandler):
             try:
                 for ch in net_data.decode('utf-8'):
                     self.net_write('\r\n'.encode('utf-8'))
-                    CmdQ.put(ch)
+
+                    print('ch:0x%02x' % ord(ch))
+                    
+                    if ord(ch) > 0x20:
+                        robot_send_cmd(ch)
+                    else:
+                        flag_continue = False
 
             except UnicodeDecodeError:
                 pass
 
     def finish(self):
+        print('finish()')
         return socketserver.StreamRequestHandler.finish(self)
-
 
 ##### Main
 def main():
-    global RobotServer
-
     port_num = DEF_PORT
 
     sys.argv.pop(0)
@@ -139,16 +101,19 @@ def main():
         port_num = int(sys.argv.pop(0))
     print('port_num =', port_num)
 
-    pi = pigpio.pi()
-    robot = AutoRobotCar(pin, pi)
-    robot.start()
+    Robot.start()
 
     RobotServer = socketserver.TCPServer(('', port_num), MyTcpHandler)
     print('listening ...', RobotServer.socket.getsockname())
     RobotServer.serve_forever()
-    
-    robot.join()
-    print('join: robot')
 
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    finally:
+        print('finally:')
+        Robot.send_cmd(' ')
+        print('Robot.join()')
+        Robot.join()
+        print('-- End --')
+        
