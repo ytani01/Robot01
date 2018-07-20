@@ -1,34 +1,82 @@
 <!DOCTYPE html>
 <html lang="ja">
   <head>
+    <title>Robot Car</title>
+    <meta charset="utf-8"
     <meta name="viewport" content="width=devicewidth,initial-scale=1,maximum-scale=3">
-    <title>test</title>
-    <script type=textjavascript>
-      <!-- 
-function cmd_stop() {
-    location.href='/stop'
-}
-	-->
+    <script type="text/javascript" src="/static/js/jquery.min.js"></script>
+    <script type="text/javascript">
+      function post(val) {
+	  var data = {"cmd": val};
+	  $.post("/action", data);
+      }
     </script>
   </head>
   <body>
-    <h1>Hello</h1>
+    <img src="localhost:9000/?action=streaming">
     <hr />
-    <input type="image" src="/static/images/button_blue1.png" width="30%">
-    <input type="image" src="/static/images/button_yellow1.png" width="30%">
-    <img src="/static/images/button_red1.png" width="30%" onclick="cmd_stop()">
-    <br />
-    <input type="image" src="/static/images/button_up.png" width="30%">
-    <input type="image" src="/static/images/button_up.png" width="30%">
-    <input type="image" src="/static/images/button_up.png" width="30%">
-    <br />
-    <input type="image" src="/static/images/button_left.png" width="30%">
-    <input type="image" src="/static/images/button_center.png" width="30%">
-    <input type="image" src="/static/images/button_right.png" width="30%">
-    <br />
-    <input type="image" src="/static/images/button_down.png" width="30%">
-    <input type="image" src="/static/images/button_down.png" width="30%">
-    <input type="image" src="/static/images/button_down.png" width="30%">
+    <div align="center">
+    <table width="75%">
+      <tboty>
+	<tr>
+	  <td>
+    <input type="image" src="/static/images/button_blue1.png" width="200px"
+	   onClick="post('@');">
+	  </td>
+	  <td>
+    <input type="image" src="/static/images/button_yellow1.png" width="200px"
+	   onClick="post('s');">
+	  </td>
+	  <td>
+    <input type="image" src="/static/images/button_red1.png" width="200px"
+	   onClick="post('s');">
+	  </td>
+	</tr>
+	<tr>
+	  <td>
+    <input type="image" src="/static/images/button_up.png" width="200px"
+	   onClick="post('q');">
+	  </td>
+	  <td>
+    <input type="image" src="/static/images/button_up.png" width="200px"
+	   onClick="post('w');">
+	  </td>
+	  <td>
+    <input type="image" src="/static/images/button_up.png" width="200px"
+	   onClick="post('e');">
+	  </td>
+	</tr>
+	<tr>
+	  <td>
+    <input type="image" src="/static/images/button_left.png" width="200px"
+	   onClick="post('a');">
+	  </td>
+	  <td>
+    <input type="image" src="/static/images/button_center.png" width="200px"
+	   onClick="post('s');">
+	  </td>
+	  <td>
+    <input type="image" src="/static/images/button_right.png" width="200px"
+	   onClick="post('d');">
+	  </td>
+	</tr>
+	<tr>
+	  <td>
+    <input type="image" src="/static/images/button_down.png" width="200px"
+	   onClick="post('z');">
+	  </td>
+	  <td>
+    <input type="image" src="/static/images/button_down.png" width="200px"
+	   onClick="post('x');">
+	  </td>
+	  <td>
+    <input type="image" src="/static/images/button_down.png" width="200px"
+	   onClick="post('c');">
+	  </td>
+	</tr>
+</tbody>
+</table>
+</div>
     <hr />
   </body>
 </html>

@@ -24,14 +24,10 @@ def robot_send_cmd(cmd):
 class MyTcpHandler(socketserver.StreamRequestHandler):
 
     def __init__(self, request, client_address, server):
-        global Robot
-
-        self.robot = Robot
         print('client_address =', client_address)
         ## Lock
         #self.wfile_lock = threading.Lock()
-        return socketserver.StreamRequestHandler.__init__(self, \
-                                                          request, \
+        return socketserver.StreamRequestHandler.__init__(self, request, \
                                                           client_address, \
                                                           server)
 

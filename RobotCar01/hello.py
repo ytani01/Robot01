@@ -10,13 +10,15 @@ def hello():
     s = "Hello, world."
     return render_template('index.html', s=s)
 
-@app.action('/action')
+@app.route('/action', methods=['POST'])
 def action():
     if request.method != 'POST':
         return
 
-    t = str(request.form['type'])
-    v = str(request.form['value'])
+    v = str(request.form['cmd'])
+    print(v)
+
+    return ''
     
 
 #####
