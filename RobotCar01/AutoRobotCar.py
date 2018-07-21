@@ -43,7 +43,7 @@ class AutoRobotCar(RobotCar.RobotCar):
         print('auto(): start')
 
         DISTANCE_FAR	= 700	# mm
-        DISTANCE_NEAR	= 350	# mm
+        DISTANCE_NEAR	= 300	# mm
         DISTANCE_NEAR2	= 150	# mm
 
         left_or_right = 'left'
