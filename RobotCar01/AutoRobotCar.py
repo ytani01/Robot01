@@ -9,6 +9,11 @@ import sys
 
 #####
 class AutoRobotCar(RobotCar.RobotCar):
+    DISTANCE_FAR	= 700	# mm
+    DISTANCE_NEAR	= 300	# mm
+    DISTANCE_NEAR2	= 150	# mm
+    FORWARD_COUNT_MAX = 10
+
     def __init__(self, pin, pi='', conf_file=''):
         self.tof = None
         self.tof_timing = 0
@@ -42,13 +47,8 @@ class AutoRobotCar(RobotCar.RobotCar):
     def auto(self):
         print('auto(): start')
 
-        DISTANCE_FAR	= 700	# mm
-        DISTANCE_NEAR	= 300	# mm
-        DISTANCE_NEAR2	= 150	# mm
-
         left_or_right = 'left'
         forward_count = 0
-        FORWARD_COUNT_MAX = 10
 
         self.move('stop')
 
@@ -79,16 +79,17 @@ class AutoRobotCar(RobotCar.RobotCar):
                 break
 
             distance = self.get_distance()
-            if distance > DISTANCE_NEAR and forward_count < FORWARD_COUNT_MAX:
+            if distance > AutoRobotCar.DISTANCE_NEAR and \
+               forward_count < AutoRobotCar.FORWARD_COUNT_MAX:
                 self.move('forward', 0.05)
                 forward_count += 1
                 continue
 
-            if forward_count >= FORWARD_COUNT_MAX:
+            if forward_count >= AutoRobotCar.FORWARD_COUNT_MAX:
                 left_or_right = next_turn_random(left_or_right)
                 print(left_or_right)
                 self.move(left_or_right, 0.2)
-                if distance < DISTANCE_FAR:
+                if distance < AutoRobotCar.DISTANCE_FAR:
                     self.move('stop', 0.5)
                 forward_count = 0
                 continue
@@ -100,14 +101,15 @@ class AutoRobotCar(RobotCar.RobotCar):
             forward_count = 0
 
             left_or_right = next_turn_random(left_or_right)
-            while distance < DISTANCE_NEAR + 20:
+            while distance < AutoRobotCar.DISTANCE_NEAR + 20:
                 print('!')
                 if not self.cmd_empty():
                     break
 
-                if distance < DISTANCE_NEAR2:
+                if distance < AutoRobotCar.DISTANCE_NEAR2:
                     print('!!')
-                    self.move('backward', 0.2)
+                    self.move('backward', 0.1)
+                    self.move('stop', 1)
                     distance = self.get_distance()
                     continue
 
