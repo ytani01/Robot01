@@ -25,6 +25,7 @@ class MyTcpHandler(socketserver.StreamRequestHandler):
 
     def __init__(self, request, client_address, server):
         print('client_address =', client_address)
+
         ## Lock
         #self.wfile_lock = threading.Lock()
         return socketserver.StreamRequestHandler.__init__(self, request, \
@@ -43,6 +44,7 @@ class MyTcpHandler(socketserver.StreamRequestHandler):
         #self.wfile_lock.release()
         
     def setup(self):
+        print('setup()')
         return socketserver.StreamRequestHandler.setup(self)
 
     def handle(self):
@@ -96,7 +98,7 @@ def main():
     if len(sys.argv) > 0:
         port_num = int(sys.argv.pop(0))
     print('port_num =', port_num)
-
+    
     Robot.start()
 
     RobotServer = socketserver.TCPServer(('', port_num), MyTcpHandler)
