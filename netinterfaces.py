@@ -3,6 +3,7 @@
 
 import netifaces
 import sys
+#from datetime import datetime
 
 def mklink(label, server, port='', path=''):
     return '<a href="' + mkurl(server, port, path) + '">' + str(label) + '</a>'
@@ -34,7 +35,9 @@ def main():
 
     html_head()
 
-    print('<h1>', end='')
+    #timestr = datetime.now().strftime('%Y/%m/%d(%a) %H:%M:%S')
+    #print('<h1>' + timestr + '</h1>')
+    print('<h1>')
     for if_name in netifaces.interfaces():
         if if_name == 'lo':
             continue
