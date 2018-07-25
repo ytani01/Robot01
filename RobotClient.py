@@ -2,11 +2,10 @@
 # -*- coding: utf-8 -*-
 
 import telnetlib
-import sys
 import time
 
 #####
-class RobotTcpClient:
+class RobotClient:
     DEF_HOST = 'localhost'
     DEF_PORT = 12345
     
@@ -17,8 +16,8 @@ class RobotTcpClient:
         self.close()
 
     def open(self, host, port):
-        self.host = RobotTcpClient.DEF_HOST
-        self.port = RobotTcpClient.DEF_PORT
+        self.host = RobotClient.DEF_HOST
+        self.port = RobotClient.DEF_PORT
         
         if host != '':
             self.host = host
@@ -46,13 +45,11 @@ class RobotTcpClient:
 
 ##### Main
 def main():
-    cl = RobotTcpClient()
+    cl = RobotClient()
 
     cl.send_cmd('d')
-    time.sleep(1)
+    time.sleep(0.5)
     cl.send_cmd('s')
 
 if __name__ == '__main__':
     main()
-
-    

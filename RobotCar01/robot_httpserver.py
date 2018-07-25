@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #
 from flask import Flask, render_template, request
-import RobotTcpClient
+from RobotClient import RobotClient
 import sys
 import os
 
@@ -12,15 +12,14 @@ DEF_PORT = 12345
 
 
 def robot_cmd(cmd):
-    cl = RobotTcpClient.RobotTcpClient(DEF_HOST, DEF_PORT)
+    cl = RobotClient(DEF_HOST, DEF_PORT)
     cl.send_cmd(cmd)
     cl.close()
 
 #####
 @app.route('/')
 def hello():
-    s = "Hello, world."
-    return render_template('index.html', s=s)
+    return render_template('index.html')
 
 @app.route('/action', methods=['POST'])
 def action():
