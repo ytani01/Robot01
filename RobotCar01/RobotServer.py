@@ -7,9 +7,9 @@ import sys
 import os
 
 #
-# MyHandler
+# RobotHandler
 #
-class MyHandler(socketserver.StreamRequestHandler):
+class RobotHandler(socketserver.StreamRequestHandler):
     def __init__(self, request, client_address, server):
         self.myname = __class__.__name__
         print(self.myname + ': client_address =', client_address)
@@ -71,33 +71,27 @@ class MyHandler(socketserver.StreamRequestHandler):
 
     
 #
-# RobotCarServer
+# RobotServer
 #
-class RobotCarServer(socketserver.TCPServer):
+class RobotServer(socketserver.TCPServer):
     DEF_PORT_NUM = 12345
-    DEF_PIN = [13, 12]
 
-    def __init__(self, port_num=0, pin=[]):
+    def __init__(self, robot, port_num=0):
         self.myname = __class__.__name__
         print(self.myname + ': __init__()')
 
+        self.robot = robot
+        
         self.port_num = port_num
         if self.port_num == 0:
-            self.port_num = RobotCarServer.DEF_PORT_NUM
+            self.port_num = RobotServer.DEF_PORT_NUM
             
-        self.pin = pin
-        if len(self.pin) != 2:
-            self.pin = RobotCarServer.DEF_PIN
-        
-        self.robot = AutoRobotCar(self.pin)
-        self.robot.start()
-    
-        super().__init__(('', self.port_num), MyHandler)
+        super().__init__(('', self.port_num), RobotHandler)
 
     def __del__(self):
         print(self.myname + ': __del__()')
 
-        self.robot.send_cmd(AutoRobotCar.CHCMD_END)
+        self.robot.send_cmd(self.robot.cmd_end)
         self.robot.join()
         print(self.myname + ': __del__(): done')
         
@@ -106,12 +100,17 @@ class RobotCarServer(socketserver.TCPServer):
 def main():
     myname = os.path.basename(sys.argv.pop(0))
 
-    port_num = RobotCarServer.DEF_PORT_NUM
+    pin = [13, 12]
+    robot = AutoRobotCar(pin)
+    robot.start()
+    print('robot: started')
+    
+    port_num = RobotServer.DEF_PORT_NUM
     if len(sys.argv) > 0:
         port_num = int(sys.argv.pop(0))
     print('port_num =', port_num)
-    
-    robot_server = RobotCarServer(port_num)
+
+    robot_server = RobotServer(robot, port_num)
     print('listening ..', robot_server.socket.getsockname())
     robot_server.serve_forever()
     
