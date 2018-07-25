@@ -109,6 +109,7 @@ class AutoRobotCar(RobotCar.RobotCar):
                 if distance < AutoRobotCar.DISTANCE_NEAR2:
                     print('!!')
                     self.move('backward', 0.1)
+                    self.move(left_or_right, 0.5)
                     self.move('stop', 1)
                     distance = self.get_distance()
                     continue

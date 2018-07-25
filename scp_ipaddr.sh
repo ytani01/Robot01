@@ -11,7 +11,8 @@ TMPFILE_PREV="${TMPDIR}/${MYNAME}.prev"
 ENVDIR="${HOME}/env"
 ACTIVATE="${ENVDIR}/bin/activate"
 
-NETINTERFACES="${HOME}/bin/netinterfaces.py 5000"
+NETINTERFACES="${HOME}/bin/netinterfaces.py"
+PORTS="5000"
 
 #####
 if [ ! -f ${ACTIVATE} ]; then
@@ -27,7 +28,7 @@ fi
 . ${ACTIVATE}
 
 while true; do
-    ${NETINTERFACES} > ${TMPFILE}
+    ${NETINTERFACES} ${PORTS} > ${TMPFILE}
 
     if diff ${TMPFILE_PREV} ${TMPFILE}; then
 	echo 'not changed'
