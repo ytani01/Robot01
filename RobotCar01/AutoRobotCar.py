@@ -15,13 +15,16 @@ class AutoRobotCar(RobotCar.RobotCar):
     FORWARD_COUNT_MAX = 10
 
     def __init__(self, pin, pi='', conf_file=''):
+        self.myname = __class__.__name__
+        print(self.myname + ': __init__()')
+        
         self.tof = None
         self.tof_timing = 0
         self.init_VL53L0X()
 
-        print('AutoRobotCar: super().__init__(pin, pi, conf_file)')
+        print(self.myname + ': super().__init__(pin, pi, conf_file)')
         super().__init__(pin, pi, conf_file)
-        print('AutoRobotCar: init():done')
+        print(self.myname + ': init():done')
 
     def init_VL53L0X(self):
         self.tof = VL53L0X.VL53L0X()
@@ -45,7 +48,7 @@ class AutoRobotCar(RobotCar.RobotCar):
         return distance
 
     def auto(self):
-        print('auto(): start')
+        print(self.myname + ': auto(): start')
 
         left_or_right = 'left'
         forward_count = 0

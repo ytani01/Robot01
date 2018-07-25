@@ -7,6 +7,7 @@ import threading
 import socketserver
 import time
 import sys
+import os
 
 DEF_PORT = 12345
 PIN_CR_SERVO = [13, 12]
@@ -25,6 +26,7 @@ class MyTcpHandler(socketserver.StreamRequestHandler):
 
     def __init__(self, request, client_address, server):
         print('client_address =', client_address)
+
         ## Lock
         #self.wfile_lock = threading.Lock()
         return socketserver.StreamRequestHandler.__init__(self, request, \
@@ -43,6 +45,7 @@ class MyTcpHandler(socketserver.StreamRequestHandler):
         #self.wfile_lock.release()
         
     def setup(self):
+        print('setup()')
         return socketserver.StreamRequestHandler.setup(self)
 
     def handle(self):
@@ -96,7 +99,7 @@ def main():
     if len(sys.argv) > 0:
         port_num = int(sys.argv.pop(0))
     print('port_num =', port_num)
-
+    
     Robot.start()
 
     RobotServer = socketserver.TCPServer(('', port_num), MyTcpHandler)
@@ -104,12 +107,15 @@ def main():
     RobotServer.serve_forever()
 
 if __name__ == '__main__':
+    myname = os.path.basename(sys.argv[0])
+    
     try:
         main()
+    except(KeyboardInterrupt):
+        print('=== ' + myname + ': Keyboard Interrupt')
     finally:
-        print('finally:')
+        print('=== ' + myname + ': finally ===')
         Robot.send_cmd(' ')
-        print('Robot.join()')
+        print('=== ' + myname + ': Robot.join()')
         Robot.join()
-        print('-- End --')
-        
+        print('=== ' + myname + ': End ===')

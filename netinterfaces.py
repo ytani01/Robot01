@@ -39,22 +39,26 @@ def main():
         if if_name == 'lo':
             continue
 
-        print(if_name + ' ', end='')
+        print(if_name)
 
         addrs = netifaces.ifaddresses(if_name)
 
         mac = addrs[netifaces.AF_LINK]
         for a in mac:
             macaddr = a['addr']
-            print('[' + macaddr + '] ', end='')
+            print('[' + macaddr + ']')
 
-        ip = addrs[netifaces.AF_INET]
+        try:
+            ip = addrs[netifaces.AF_INET]
+        except(KeyError):
+            print('???.???.???.???')
+            break
         for a in ip:
             ipaddr = a['addr']
-            print(mklink(ipaddr, ipaddr) + ' ', end='')
+            print(mklink(ipaddr, ipaddr))
 
             for p in sys.argv:
-                print(mklink(p, ipaddr, p) + ' ', end='')
+                print(mklink(p, ipaddr, p))
 
 #        ipv6_addr = addrs[netifaces.AF_INET6]
 #        for a in ipv6_addr:

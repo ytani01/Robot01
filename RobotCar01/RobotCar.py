@@ -13,9 +13,8 @@ import threading
 
 #####
 class RobotCar(threading.Thread):
-    CHCMD_END = ' '
-    
     DEF_CONF_FILENAME = 'robot_car.csv'
+
     #DEF_CONF_FILE = os.environ['HOME']+'/'+DEF_CONF_FILENAME
     DEF_CONF_FILE = './'+DEF_CONF_FILENAME
 
@@ -28,9 +27,13 @@ class RobotCar(threading.Thread):
                       'right':    [1380,1380]   }
 
     def __init__(self, pin, pi='', conf_file=''):
+        self.myname = __class__.__name__
+        print(self.myname + ': __init__()')
+        
         self.pin = pin
         self.n = len(pin)
 
+        ## Command queue
         self.cmdq = queue.Queue()
 
         ## init pigpio
@@ -53,6 +56,8 @@ class RobotCar(threading.Thread):
         self.move_cmd['a'] = 'left'
         self.move_cmd['d'] = 'right'
 
+        self.cmd_end = ' '
+
         ## init pulse value
         self.pulse_val = RobotCar.DEF_PULSE_VAL
 
@@ -70,26 +75,26 @@ class RobotCar(threading.Thread):
         print('RobotCar: init():done')
 
     def __del__(self):
+        print('=== RobotCar: self.__del__() ===')
         '''
-        print('=== RobotCar self.__del__() ===')
         print('RobotCar self.move(\'stop\')')
         self.move('stop')
         print('RobotCar self.move(\'off\')')
         self.move('off')
         '''
         if self.mypi:
-            print('RobotCar self.pi.stop()')
+            print('=== RobotCar: self.pi.stop() ===')
             self.pi.stop()
-        print('Bye!')
+        print('=== RoBotCar: End ===')
 
     ### cmdq
     def send_cmd(self, cmd):
-        print('send_cmd(\''+str(cmd)+'\')')
+        print(self.myname + ': send_cmd(\''+str(cmd)+'\')')
         self.cmdq.put(cmd)
 
     def recv_cmd(self):
         cmd = self.cmdq.get()
-        print('recv_cmd(\''+str(cmd)+'\')')
+        print(self.myname + ': recv_cmd(\''+str(cmd)+'\')')
         return cmd
 
     def cmd_empty(self):
@@ -150,7 +155,7 @@ class RobotCar(threading.Thread):
 
     ### Control
     def exec_cmd(self, cmd):
-        print('exec_cmd(\''+str(cmd)+'\')')
+        print(self.myname + ': exec_cmd(\''+str(cmd)+'\')')
 
         [idx_left, idx_right] = [0, 1]
         
@@ -171,14 +176,12 @@ class RobotCar(threading.Thread):
         if cmd == '.':
             time.sleep(0.5)
             
-        return cmd
-            
     ### Thread
     def run(self):
         while True:
             cmd = self.recv_cmd()
             self.exec_cmd(cmd)
-            if cmd == RobotCar.CHCMD_END:
+            if cmd == self.cmd_end:
                 break
 
             time.sleep(0.01)
