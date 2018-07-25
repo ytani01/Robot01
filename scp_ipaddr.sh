@@ -30,11 +30,11 @@ fi
 
 if [ -f ${TMPFILE_PREV} ]; then
     rm -f ${TMPFILE_PREV}
-    touch ${TMPFILE_PREV}
 fi
+touch ${TMPFILE_PREV}
 
 while true; do
-    SLEEP_SEC=60
+    SLEEP_SEC=15
 
     ${NETINTERFACES} ${PORTS} > ${TMPFILE} 2>&1
 
@@ -43,7 +43,7 @@ while true; do
     else
 	scp ${TMPFILE} ${DSTDIR}
 	mv ${TMPFILE} ${TMPFILE_PREV}
-	SLEEP_SEC=10
+	SLEEP_SEC=5
     fi
 
     sleep ${SLEEP_SEC}
