@@ -7,6 +7,7 @@ import threading
 import socketserver
 import time
 import sys
+import os
 
 DEF_PORT = 12345
 PIN_CR_SERVO = [13, 12]
@@ -106,12 +107,15 @@ def main():
     RobotServer.serve_forever()
 
 if __name__ == '__main__':
+    myname = os.path.basename(sys.argv[0])
+    
     try:
         main()
+    except(KeyboardInterrupt):
+        print('=== ' + myname + ': Keyboard Interrupt')
     finally:
-        print('finally:')
+        print('=== ' + myname + ': finally ===')
         Robot.send_cmd(' ')
-        print('Robot.join()')
+        print('=== ' + myname + ': Robot.join()')
         Robot.join()
-        print('-- End --')
-        
+        print('=== ' + myname + ': End ===')

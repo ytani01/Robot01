@@ -70,17 +70,17 @@ class RobotCar(threading.Thread):
         print('RobotCar: init():done')
 
     def __del__(self):
+        print('=== RobotCar: self.__del__() ===')
         '''
-        print('=== RobotCar self.__del__() ===')
         print('RobotCar self.move(\'stop\')')
         self.move('stop')
         print('RobotCar self.move(\'off\')')
         self.move('off')
         '''
         if self.mypi:
-            print('RobotCar self.pi.stop()')
+            print('=== RobotCar: self.pi.stop() ===')
             self.pi.stop()
-        print('Bye!')
+        print('=== RoBotCar: End ===')
 
     ### cmdq
     def send_cmd(self, cmd):

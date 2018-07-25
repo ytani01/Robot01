@@ -4,5 +4,5 @@ WORKDIR=${HOME}/Robot01/RobotCar01
 
 cd ${WORKDIR}
 . ./activate
-./robot_tcpserver.py &
+./RobotCarServer.py &
 ./robot_httpserver.py &

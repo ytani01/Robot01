@@ -2,6 +2,8 @@
 #
 from flask import Flask, render_template, request
 import RobotTcpClient
+import sys
+import os
 
 app = Flask(__name__)
 
@@ -36,10 +38,12 @@ def action():
 
 #####
 def main():
+    myname = os.path.basename(sys.argv[0])
+    
     try:
         app.run(host='0.0.0.0', debug=True)
     finally:
-        print('=== finally ===')
+        print('=== ' + myname + ': finally ===')
     
 if __name__ == '__main__':
     main()
