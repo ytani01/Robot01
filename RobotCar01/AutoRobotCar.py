@@ -1,18 +1,19 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import RobotCar
+from RobotCar import RobotCar
 import pigpio
 import VL53L0X
 import time
 import sys
 
 #####
-class AutoRobotCar(RobotCar.RobotCar):
+class AutoRobotCar(RobotCar):
     DISTANCE_FAR	= 700	# mm
     DISTANCE_NEAR	= 300	# mm
     DISTANCE_NEAR2	= 150	# mm
-    FORWARD_COUNT_MAX = 10
+
+    FORWARD_COUNT_MAX 	= 10
 
     def __init__(self, pin, pi='', conf_file=''):
         self.myname = __class__.__name__
@@ -22,6 +23,8 @@ class AutoRobotCar(RobotCar.RobotCar):
         self.tof_timing = 0
         self.init_VL53L0X()
 
+        self.cmd_auto = '@'
+        
         print(self.myname + ': super().__init__(pin, pi, conf_file)')
         super().__init__(pin, pi, conf_file)
         print(self.myname + ': init():done')
@@ -125,7 +128,7 @@ class AutoRobotCar(RobotCar.RobotCar):
 
     ### Control
     def exec_cmd(self, cmd):
-        if cmd == '@':
+        if cmd == self.cmd_auto:
             self.auto()
         else:
             super().exec_cmd(cmd)
@@ -170,7 +173,7 @@ def main():
     robot.send_cmd('s')
     time.sleep(1)
 
-    robot.send_cmd(AutoRobotCar.CHCMD_END)
+    robot.send_cmd(robot.cmd_end)
     robot.join()
 
 if __name__ == '__main__':

@@ -6,32 +6,32 @@ from RobotServer import RobotServer
 import sys
 import os
 
+MyName = os.path.basename(sys.argv[0])
+    
 DEF_PIN = [13, 12]
 DEF_PORT_NUM = 12345
 
 ##### Main
-def main(myname):
+def main():
     pin = DEF_PIN
     port = DEF_PORT_NUM
 
     if len(sys.argv) > 1:
         port_num = int(sys.argv[1])
 
-    print(myname + ': pin =', pin)
+    print(MyName + ': pin =', pin)
     robot = AutoRobotCar(pin)
     robot.start()
-    print(myname + ': robot: started')
+    print(MyName + ': robot: started')
 
-    print(myname + ': port =', port)
+    print(MyName + ': port =', port)
     robot_server = RobotServer(robot, port)
     robot_server.serve_forever()
 
 if __name__ == '__main__':
-    myname = os.path.basename(sys.argv[0])
-    
     try:
-        main(myname)
+        main()
     except(KeyboardInterrupt):
-        print(myname + ': [Ctrl]-[C]')
+        print(MyName + ': [Ctrl]-[C]')
     finally:
-        print('=== ' + myname + ': End ===')
+        print('=== ' + MyName + ': End ===')
