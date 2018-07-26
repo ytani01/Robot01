@@ -55,7 +55,7 @@ def main():
             ip = addrs[netifaces.AF_INET]
         except(KeyError):
             print('???.???.???.???')
-            break
+            continue
         for a in ip:
             ipaddr = a['addr']
             print(mklink(ipaddr, ipaddr))
