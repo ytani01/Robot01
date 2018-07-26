@@ -1,4 +1,6 @@
 #Key,Left Motor,Right Motor
+right,1515,1510
+left,1410,1390
 break,1455,1435
 stop,1460,1475
 left,1415,1415

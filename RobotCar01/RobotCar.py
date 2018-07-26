@@ -14,7 +14,6 @@ import threading
 #####
 class RobotCar(threading.Thread):
     DEF_CONF_FILENAME = 'robot_car.csv'
-
     #DEF_CONF_FILE = os.environ['HOME']+'/'+DEF_CONF_FILENAME
     DEF_CONF_FILE = './'+DEF_CONF_FILENAME
 
@@ -208,7 +207,7 @@ def main():
     robot.move('stop', 1)
 
     print('send_cmd( )')
-    robot.send_cmd(RobotCar.CHCMD_END)
+    robot.send_cmd(robot.cmd_end)
 
     print('join')
     robot.join()

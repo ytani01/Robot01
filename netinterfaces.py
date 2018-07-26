@@ -54,8 +54,7 @@ def main():
         try:
             ip = addrs[netifaces.AF_INET]
         except(KeyError):
-            print('???.???.???.???')
-            break
+            ip = []
         for a in ip:
             ipaddr = a['addr']
             print(mklink(ipaddr, ipaddr))
@@ -63,6 +62,7 @@ def main():
             for p in sys.argv:
                 print(mklink(p, ipaddr, p))
 
+        print('<br />')
 #        ipv6_addr = addrs[netifaces.AF_INET6]
 #        for a in ipv6_addr:
 #            print(a['addr'])

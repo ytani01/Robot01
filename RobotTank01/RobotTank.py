@@ -1,17 +1,18 @@
-#!/usr/bin/env python3
+<#!/usr/bin/env python3
 #
 import pigpio
 import DcMtr
 
+import queue
+import threading
 import csv
 import time
 import sys
 import os
 
-MYNAME = sys.argv[0].split('/').pop()
 #####
 
-class RobotTank:
+class RobotTank(threading.Thread):
     DEF_CONF_FILENAME = 'robot_tank.csv'
     DEF_CONF_FILE = './' + DEF_CONF_FILENAME
 
@@ -26,12 +27,18 @@ class RobotTank:
     DEF_SPEED_VAL['backward']	= [-100,-100]
     DEF_SPEED_VAL['left'] 	= [-100,100]
     DEF_SPEED_VAL['right'] 	= [100,-100]
-    print(DEF_SPEED_VAL)
 
     def __init__(self, pin, pi='', conf_file=''):
+        self.myname = __class__.__name__
+        print(self.myname + ': __init__()')
+        
         self.pin = pin
         self.n = len(pin)
 
+        ## Command queue
+        self.cmdq = queue.Queue()
+
+        ## Init pigpio
         if type(pi) == pigpio.pi:
             self.pi = pi
             self.mypi = False
@@ -39,16 +46,33 @@ class RobotTank:
             self.pi = pigpio.pi()
             self.mypi = True
 
-        self.speed_val = RobotTank.DEF_SPEED_VAL
-
+        ## Init DC Motors
         self.dc_mtr = DcMtr.DcMtrN(self.pi, self.pin)
+
+        ## move_cmd
+        self.move_cmd = {}
+        self.move_cmd['s'] = 'stop'
+        self.move_cmd['S'] = 'break'
+        self.move_cmd['w'] = 'forward'
+        self.move_cmd['x'] = 'backward'
+        self.move_cmd['a'] = 'left'
+        self.move_cmd['d'] = 'right'
+        self.cmd_end = ' '
+
+        ## Init speed values
+        self.speed_val = RobotTank.DEF_SPEED_VAL
 
         self.set_conf_file(conf_file)
         self.conf_load()
 
+        ## Stop Motors
         self.move_stop()
 
+        super().__init__()
+
     def __del__(self):
+        print(self.myname + ': __del__()')
+
         print('set_stop()', '\r')
         self.move_stop()
         if self.mypi:
@@ -57,6 +81,18 @@ class RobotTank:
         print('self.conf_save()', '\r')
         self.conf_save()
 
+    ### cmdq
+    def send_cmd(self, cmd):
+        print(self.myname + ': send_cmd(\'' + str(cmd) + '\')')
+        self.cmdq.put(cmd)
+
+    def recv_cmd(self):
+        cmd = self.cmdq.get()
+        print(self.myname + ': recv_cmd(\'' + str(cmd) + '\')')
+        return cmd
+
+    def cmd_empty(self):
+        return self.cmdq.empty()
 
     ### move command
     def move(self, key, sec=0):
@@ -140,15 +176,52 @@ class RobotTank:
         except(FileNotFoundError):
             print('!! '+conf_file+': not found .. use default value.')
 
+    ## Control
+    def exec_cmd(self, cmd):
+        print(self.myname + ': exec_cmd(\'' + str(cmd) + '\')')
+
+        if cmd in self.move_cmd.keys():
+            print(cmd + ': ' + self.move_cmd[cmd])
+            self.move(self.move_cmd[cmd])
+            return cmd
+
+        ### XXXXX
+        if cmd == 'q':
+            pass
+        if cmd == 'z':
+            pass
+        if cmd == 'e':
+            pass
+        if cmd == 'c':
+            pass
+
+        if cmd == '.':
+            time.sleep(0.5)
+            
+    ## Thread
+    def run(self):
+        while True:
+            cmd = self.recv_cmd()
+            self.exec_cmd(cmd)
+            if cmd == self.cmd_end:
+                break
+
+            time.sleep(0.01)
 
 #####
 def main():
     PIN_DC_MOTOR = [[17,18], [13,12]]
 
-    print(MYNAME)
-
     robot = RobotTank(PIN_DC_MOTOR)
+    robot.start()
+    time.sleep(1)
 
+    robot.send_cmd('a')
+    time.sleep(0.2)
+    robot.send_cmd('d')
+    time.sleep(0.2)
+    robot.send_cmd('s')
+    time.sleep(0.5)
     robot.move('forward', 0.5)
     robot.move_break(0.3)
     robot.move('left', 0.5)
