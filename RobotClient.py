@@ -10,6 +10,8 @@ class RobotClient:
     DEF_PORT = 12345
     
     def __init__(self, host='', port=0):
+        self.myname = __class__.__name__
+        print(self.myname + ': __init__(' + host + ',' + str(port) + ')')
         self.open(host, port)
 
     def __del__(self):
@@ -32,15 +34,15 @@ class RobotClient:
     def send_cmd(self, cmd):
         in_data = self.tn.read_very_eager()
         if len(in_data) > 0:
-            print('in_data:', in_data)
+            print(self.myname + ': in_data:', in_data)
 
         for ch in cmd:
-            print('ch =', ch, '(0x%02x)' % ord(ch))
+            print(self.myname + ': ch =', ch, '(0x%02x)' % ord(ch))
             self.tn.write(ch.encode('utf-8'))
             
             in_data = self.tn.read_very_eager()
             if len(in_data) > 0:
-                print('in_data:', in_data)
+                print(self.myname + ': in_data:', in_data)
 
 
 ##### Main
