@@ -54,7 +54,7 @@ class SG90:
         
 #####
 def main():
-    Pin = 15
+    Pin = 4
     
     pi = pigpio.pi()
 

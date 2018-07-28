@@ -38,7 +38,13 @@ class AutoRobotTank(RobotTank):
     def auto(sefl):
         print(self.myname + ': auto(): start')
 
-        pass
+        ## XXX
+        while True:
+            if not self.cmd_empty():
+                self.move('break')
+                break
+
+        print(self.myname + ':auto(): end')
 
     def exec_cmd(self, cmd):
         if cmd == self.cmd_auto:
@@ -50,7 +56,22 @@ class AutoRobotTank(RobotTank):
 
 #####
 def main():
-    pass
+    pin = [[17, 18], [13, 12]]
+
+    robot = AutoRobotTank(pin)
+    robot.start()
+    time.sleep(1)
+
+    robot.send_cmd('w')
+    time.sleep(1)
+    robot.send_cmd('S')
+    time.sleep(1)
+    robot.send_cmd('x')
+    time.sleep(1)
+    robot.sned_cmd('S')
+    time.sleep(1)
+    robot.send_cmd('s')
+    robot.send_cmd(' ')
 
 if __name__ == '__main__':
     main()

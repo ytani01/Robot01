@@ -1,8 +1,8 @@
 #Key,Left Motor,Right Motor
 stop,0,0
-right,100,-100
-left,-100,100
-break,0,0
-off,0,0
 forward,100,100
+left,-100,100
+off,0,0
+right,100,-100
+break,0,0
 backward,-100,-100

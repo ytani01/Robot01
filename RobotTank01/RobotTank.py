@@ -1,4 +1,4 @@
-<#!/usr/bin/env python3
+#!/usr/bin/env python3
 #
 import pigpio
 import DcMtr
@@ -59,6 +59,8 @@ class RobotTank(threading.Thread):
         self.move_cmd['d'] = 'right'
         self.cmd_end = ' '
 
+        self.move_stat = 'stop'
+        
         ## Init speed values
         self.speed_val = RobotTank.DEF_SPEED_VAL
 
@@ -96,6 +98,8 @@ class RobotTank(threading.Thread):
 
     ### move command
     def move(self, key, sec=0):
+        self.move_stat = key
+        
         if key == 'break':
             self.move_break()
         elif key == 'stop':
@@ -180,20 +184,33 @@ class RobotTank(threading.Thread):
     def exec_cmd(self, cmd):
         print(self.myname + ': exec_cmd(\'' + str(cmd) + '\')')
 
+        [idx_left, idx_right] = [0, 1]
+        
         if cmd in self.move_cmd.keys():
             print(cmd + ': ' + self.move_cmd[cmd])
             self.move(self.move_cmd[cmd])
             return cmd
 
-        ### XXXXX
+        ###
         if cmd == 'q':
-            pass
+            sv = self.change_speed_val(move_stat, idx_left, +5)
+            self.move(move_stat)
+            print(move_stat, idx_left, sv)
+            
         if cmd == 'z':
-            pass
+            sv = self.change_speed_val(move_stat, idx_left, -5)
+            self.move(move_stat)
+            print(move_stat, idx_left, sv)
+
         if cmd == 'e':
-            pass
+            sv = self.change_speed_val(move_stat, idx_right, +5)
+            self.move(move_stat)
+            print(move_stat, idx_right, sv)
+
         if cmd == 'c':
-            pass
+            sv = self.change_speed_val(move_stat, idx_right, +5)
+            self.move(move_stat)
+            print(move_stat, idx_right, sv)
 
         if cmd == '.':
             time.sleep(0.5)
@@ -217,20 +234,19 @@ def main():
     time.sleep(1)
 
     robot.send_cmd('a')
-    time.sleep(0.2)
+    time.sleep(1)
+    robot.send_cmd('S')
+    time.sleep(1)
     robot.send_cmd('d')
-    time.sleep(0.2)
+    time.sleep(1)
+    robot.send_cmd('S')
+    time.sleep(1)
     robot.send_cmd('s')
-    time.sleep(0.5)
-    robot.move('forward', 0.5)
-    robot.move_break(0.3)
-    robot.move('left', 0.5)
-    robot.move_break(0.3)
-
+    time.sleep(1)
+    robot.send_cmd(' ')
 
 if __name__ == '__main__':
     try:
         main()
     finally:
         print('=== finally ===')
-#        robot.end()
