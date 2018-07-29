@@ -193,24 +193,24 @@ class RobotTank(threading.Thread):
 
         ###
         if cmd == 'q':
-            sv = self.change_speed_val(move_stat, idx_left, +5)
-            self.move(move_stat)
-            print(move_stat, idx_left, sv)
+            sv = self.change_speed_val(self.move_stat, idx_left, +5)
+            self.move(self.move_stat)
+            print(self.move_stat, idx_left, sv)
             
         if cmd == 'z':
-            sv = self.change_speed_val(move_stat, idx_left, -5)
-            self.move(move_stat)
-            print(move_stat, idx_left, sv)
+            sv = self.change_speed_val(self.move_stat, idx_left, -5)
+            self.move(self.move_stat)
+            print(self.move_stat, idx_left, sv)
 
         if cmd == 'e':
-            sv = self.change_speed_val(move_stat, idx_right, +5)
-            self.move(move_stat)
-            print(move_stat, idx_right, sv)
+            sv = self.change_speed_val(self.move_stat, idx_right, +5)
+            self.move(self.move_stat)
+            print(self.move_stat, idx_right, sv)
 
         if cmd == 'c':
-            sv = self.change_speed_val(move_stat, idx_right, +5)
-            self.move(move_stat)
-            print(move_stat, idx_right, sv)
+            sv = self.change_speed_val(self.move_stat, idx_right, -5)
+            self.move(self.move_stat)
+            print(self.move_stat, idx_right, sv)
 
         if cmd == '.':
             time.sleep(0.5)
@@ -227,7 +227,7 @@ class RobotTank(threading.Thread):
 
 #####
 def main():
-    PIN_DC_MOTOR = [[17,18], [13,12]]
+    PIN_DC_MOTOR = [[12, 13], [18, 17]]
 
     robot = RobotTank(PIN_DC_MOTOR)
     robot.start()

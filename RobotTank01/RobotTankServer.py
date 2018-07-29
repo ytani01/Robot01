@@ -3,28 +3,35 @@
 
 from AutoRobotTank import AutoRobotTank
 from RobotServer import RobotServer
+import pigpio
 import sys
 import os
 
 MyName = os.path.basename(sys.argv[0])
 
-DEF_PIN = [[0, 0], [0, 0]]
+DEF_PIN_DC = [[12, 13], [18, 17]]
+DEF_PIN_SERVO = 27
 DEF_PORT_NUM = 12345
 
 ##### Main
 def main():
-    pin = DEF_PIN
-    port = DEF_PORT_NUM
+    pin_dc = DEF_PIN_DC
+    pin_servo = DEF_PIN_SERVO
+    port_num = DEF_PORT_NUM
 
     if len(sys.argv) > 1:
         port_num = int(sys.argv[1])
 
-    print(MyName + ': pin =', pin)
-    robot = AutoRobotTank(pin)jjjjjj
+    pi = pigpio.pi()
+    
+    print(MyName + ': pin_dc =', pin_dc)
+    print(MyName + ': pin_servo =', pin_servo)
+    robot = AutoRobotTank(pin_dc, pin_servo, pi)
     robot.start()
+    print(MyName + ': robot: started')
 
-    print(MyName + ': port=', port)
-    robot_server = RobotServer(robot, port)
+    print(MyName + ': port_num =', port_num)
+    robot_server = RobotServer(robot, port_num)
     robot_server.serve_forever()
 
 if __name__ == '__main__':
