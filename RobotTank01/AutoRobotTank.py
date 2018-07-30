@@ -52,7 +52,7 @@ class AutoRobotTank(RobotTank):
         print('\r')
         return distance
 
-    def auto(sefl):
+    def auto(self):
         print(self.myname + ': auto(): start')
 
         ## XXX
