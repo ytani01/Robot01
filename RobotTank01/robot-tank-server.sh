@@ -30,4 +30,4 @@ if [ ! -x ${CMD} ]; then
     exit 3
 fi
 echo "starting ${CMD} ..."
-exec ${CMD} $* 
+${CMD} $* &

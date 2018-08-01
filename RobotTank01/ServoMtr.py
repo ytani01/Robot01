@@ -71,10 +71,14 @@ def main():
         print(sm.set_pulse(SG90.PULSE_MIN))
         print(sm.set_pulse(SG90.PULSE_MAX))
         print(sm.set_pulse(SG90.PULSE_MIN))
-        print(sm.set_pulse(1400))
+        time.sleep(1)
+        for a in [1400]:
+            print(sm.set_pulse(a))
+            time.sleep(1)
     else:
         for p in sys.argv:
             print(sm.set_pulse(int(p)))
+            time.sleep(1)
 
 if __name__ == '__main__':
     main()

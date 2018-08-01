@@ -24,6 +24,11 @@ class AutoRobotTank(RobotTank):
         self.cmd_auto = '@'
 
         self.servo = SG90(pin_servo, pi)
+        self.servo_angle_min = 500
+        self.servo_angle_max = 2300
+        self.servo_angle_center = 1400
+        self.servo_angle_left = self.servo_angle_max
+        self.servo_angle_right = self.servo_angle_min
 
         self.tof = None
         self.tof_timing = 0
@@ -38,12 +43,34 @@ class AutoRobotTank(RobotTank):
         if self.tof_timing < 20000:
             self.tof_timing = 20000
         print('self.tof_timing = %d ms' % (self.tof_timing/1000))
+        print(self.tof.get_distance())
 
-    def get_distance(self):
+    def set_servo_angle(self, angle=0):
+        if angle == 0:
+            angle = self.servo_angle_center
+        if angle < self.servo_angle_min:
+            angle = self.servo_angle_min
+        if angle > self.servo_angle_max:
+            angle = self.servo_angle_max
+
+        print('set_servo_angle(): angle =', angle)
+            
+        self.servo.set_pulse(angle)
+
+    def get_distance(self, angle=0):
         N_MAX = 70
 
+        '''
+        if angle > 0:
+            self.set_servo_angle(angle)
+        '''
+
+        ### XXX 
         distance = self.tof.get_distance()
+        #distance = 1000
         print('%5.1fcm ' % (distance/10), end='')
+        ###
+        
         n = int(distance/10)
         if n > N_MAX:
             n = N_MAX
@@ -68,11 +95,11 @@ class AutoRobotTank(RobotTank):
             self.auto()
         else:
             if cmd == 'a':
-                self.servo.set_pulse(2000)
+                self.get_distance(self.servo_angle_left)
             elif cmd == 'd':
-                self.servo.set_pulse(1000)
+                self.get_distance(self.servo_angle_right)
             else:
-                self.servo.set_pulse(1400)
+                self.get_distance(self.servo_angle_center)
             super().exec_cmd(cmd)
 
         return cmd
