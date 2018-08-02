@@ -23,7 +23,9 @@ class AutoRobotTank(RobotTank):
 
         self.cmd_auto = '@'
 
+        '''
         self.servo = SG90(pin_servo, pi)
+        '''
         self.servo_angle = {}
         self.servo_angle['min'] = 500
         self.servo_angle['center'] = 1400
@@ -34,6 +36,7 @@ class AutoRobotTank(RobotTank):
         self.tof = None
         self.tof_timing = 0
         self.init_VL53L0X()
+        self.err_get_distance = False
 
         super().__init__(pin_dc, pi, conf_file)
 
@@ -45,6 +48,36 @@ class AutoRobotTank(RobotTank):
             self.tof_timing = 20000
         print('self.tof_timing = %d ms' % (self.tof_timing/1000))
 
+    def get_distance(self, angle=0):
+        print(self.myname + ': get_distance(', angle, ')')
+
+        if self.err_get_distance:
+            print(self.myname + ': err_get_distance =', self.err_get_distance)
+            return 0
+        
+        N_MAX = 70
+
+        '''
+        if angle > 0:
+            self.set_servo_angle(angle)
+        '''
+        time.sleep(self.tof_timing/1000000)
+        distance = self.tof.get_distance()
+        print(self.myname + ': get_distance(', angle, '): %5.1fcm ' % (distance/10), end='')
+        if distance < 0:
+            print(self.myname + ':get_distance(', angle, '): Error!!')
+            self.move_stop()
+            self.err_get_distance = True
+            return distance
+        
+        n = int(distance/10)
+        if n > N_MAX:
+            n = N_MAX
+        for i in range(n):
+            print('*', end='')
+        print('\r')
+        return distance
+
     def set_servo_angle(self, angle=0):
         if angle == 0:
             angle = self.servo_angle['center']
@@ -55,29 +88,7 @@ class AutoRobotTank(RobotTank):
 
         print('set_servo_angle(): angle =', angle)
             
-        self.servo.set_pulse(angle)
-
-    def get_distance(self, angle=0):
-        N_MAX = 70
-
-
-        if angle > 0:
-            self.set_servo_angle(angle)
-
-
-        ### XXX 
-        distance = self.tof.get_distance()
-        #distance = 1000
-        print('%5.1fcm ' % (distance/10), end='')
-        ###
-        
-        n = int(distance/10)
-        if n > N_MAX:
-            n = N_MAX
-        for i in range(n):
-            print('*', end='')
-        print('\r')
-        return distance
+        #self.servo.set_pulse(angle)
 
     def auto(self):
         print(self.myname + ': auto(): start')
@@ -107,7 +118,7 @@ class AutoRobotTank(RobotTank):
 #####
 def main():
     pin_dc = [[12, 13], [18, 17]]
-    pin_servo = 27
+    pin_servo = 22
     pi = pigpio.pi()
 
     robot = AutoRobotTank(pin_dc, pin_servo, pi)
