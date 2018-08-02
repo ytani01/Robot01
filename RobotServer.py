@@ -78,6 +78,8 @@ class RobotServer(socketserver.TCPServer):
         print(self.myname + ': __init__()')
 
         self.robot = robot
+        if not self.robot.is_alive():
+            self.robot.start()
         
         self.port_num = port_num
         if self.port_num == 0:

@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from AutoRobotTank import AutoRobotTank
+from RobotTank import RobotTank
 from RobotServer import RobotServer
 import pigpio
 import sys
@@ -10,7 +11,7 @@ import os
 MyName = os.path.basename(sys.argv[0])
 
 DEF_PIN_DC = [[12, 13], [18, 17]]
-DEF_PIN_SERVO = 27
+DEF_PIN_SERVO = 22
 DEF_PORT_NUM = 12345
 
 ##### Main
@@ -27,6 +28,7 @@ def main():
     print(MyName + ': pin_dc =', pin_dc)
     print(MyName + ': pin_servo =', pin_servo)
     robot = AutoRobotTank(pin_dc, pin_servo, pi)
+#    robot = RobotTank(pin_dc, pi)
     robot.start()
     print(MyName + ': robot: started')
 

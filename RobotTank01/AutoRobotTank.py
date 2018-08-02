@@ -24,11 +24,12 @@ class AutoRobotTank(RobotTank):
         self.cmd_auto = '@'
 
         self.servo = SG90(pin_servo, pi)
-        self.servo_angle_min = 500
-        self.servo_angle_max = 2300
-        self.servo_angle_center = 1400
-        self.servo_angle_left = self.servo_angle_max
-        self.servo_angle_right = self.servo_angle_min
+        self.servo_angle = {}
+        self.servo_angle['min'] = 500
+        self.servo_angle['center'] = 1400
+        self.servo_angle['max'] = 2300
+        self.servo_angle['left'] = self.servo_angle['max']
+        self.servo_angle['right'] = self.servo_angle['min']
 
         self.tof = None
         self.tof_timing = 0
@@ -43,15 +44,14 @@ class AutoRobotTank(RobotTank):
         if self.tof_timing < 20000:
             self.tof_timing = 20000
         print('self.tof_timing = %d ms' % (self.tof_timing/1000))
-        print(self.tof.get_distance())
 
     def set_servo_angle(self, angle=0):
         if angle == 0:
-            angle = self.servo_angle_center
-        if angle < self.servo_angle_min:
-            angle = self.servo_angle_min
-        if angle > self.servo_angle_max:
-            angle = self.servo_angle_max
+            angle = self.servo_angle['center']
+        if angle < self.servo_angle['min']:
+            angle = self.servo_angle['min']
+        if angle > self.servo_angle['max']:
+            angle = self.servo_angle['max']
 
         print('set_servo_angle(): angle =', angle)
             
@@ -95,11 +95,11 @@ class AutoRobotTank(RobotTank):
             self.auto()
         else:
             if cmd == 'a':
-                self.get_distance(self.servo_angle_left)
+                self.get_distance(self.servo_angle['left'])
             elif cmd == 'd':
-                self.get_distance(self.servo_angle_right)
+                self.get_distance(self.servo_angle['right'])
             else:
-                self.get_distance(self.servo_angle_center)
+                self.get_distance(self.servo_angle['center'])
             super().exec_cmd(cmd)
 
         return cmd
