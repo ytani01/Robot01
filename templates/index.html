@@ -13,8 +13,11 @@
     </script>
   </head>
   <body>
-    <img src="localhost:9000/?action=streaming">
-    <hr />
+    {% if ipaddr %}
+    <div align="center">
+      <img src="http://{{ipaddr}}:9000/?action=streaming", width="90%">
+    </div>
+    {% endif %}
     <div align="center">
       <table>
 	<tbody>

@@ -2,6 +2,7 @@
 #
 from flask import Flask, render_template, request
 from RobotClient import RobotClient
+import netifaces
 import sys
 import os
 
@@ -14,11 +15,32 @@ DEF_PORT = 12345
 
 RobotHost = DEF_HOST
 RobotPort = DEF_PORT
+#####
+def get_ipaddr():
+    for if_name in netifaces.interfaces():
+        if if_name == 'lo':
+            continue
 
+        print(if_name)
+        
+        addrs = netifaces.ifaddresses(if_name)
+        print(addrs)
+
+        try:
+            ip = addrs[netifaces.AF_INET]
+        except(KeyError):
+            continue
+        print(ip)
+
+        return ip[0]['addr']
+
+    return ''
+            
 #####
 @app.route('/')
 def index():
-    return render_template('index.html')
+    ipaddr = get_ipaddr()
+    return render_template('index.html', ipaddr=ipaddr)
 
 @app.route('/action', methods=['POST'])
 def action():
