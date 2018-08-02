@@ -60,10 +60,10 @@ class AutoRobotTank(RobotTank):
     def get_distance(self, angle=0):
         N_MAX = 70
 
-        '''
+
         if angle > 0:
             self.set_servo_angle(angle)
-        '''
+
 
         ### XXX 
         distance = self.tof.get_distance()

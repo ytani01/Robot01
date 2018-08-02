@@ -23,7 +23,7 @@ class RobotHandler(socketserver.StreamRequestHandler):
         try:
             self.wfile.write(msg)
         except:
-            print(self.myname + ': net_write(): Error !!')
+            print(self.myname + ': net_write(', msg, '): Error !!')
 
     def handle(self):
         print(self.myname + ': handle()')

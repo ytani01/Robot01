@@ -39,7 +39,9 @@ class RobotClient:
         for ch in cmd:
             print(self.myname + ': ch =', ch, '(0x%02x)' % ord(ch))
             self.tn.write(ch.encode('utf-8'))
-            
+
+            time.sleep(0.1)
+
             in_data = self.tn.read_very_eager()
             if len(in_data) > 0:
                 print(self.myname + ': in_data:', in_data)
