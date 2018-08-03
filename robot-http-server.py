@@ -15,6 +15,9 @@ DEF_PORT = 12345
 
 RobotHost = DEF_HOST
 RobotPort = DEF_PORT
+
+Flag_Video = 'off'
+
 #####
 def get_ipaddr():
     for if_name in netifaces.interfaces():
@@ -35,13 +38,20 @@ def get_ipaddr():
         return ip[0]['addr']
 
     return ''
-            
+
+def index0(video_sw):
+    ipaddr = get_ipaddr()
+    return render_template('index.html', ipaddr=ipaddr, video=video_sw)
+    
 #####
 @app.route('/')
 def index():
-    ipaddr = get_ipaddr()
-    return render_template('index.html', ipaddr=ipaddr)
+    return index0('off')
 
+@app.route('/video')
+def video_movde():
+    return index0('on')
+        
 @app.route('/action', methods=['POST'])
 def action():
     global RobotHost, RobotPort

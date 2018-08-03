@@ -15,7 +15,11 @@
   <body>
     {% if ipaddr %}
     <div align="center">
-      <img src="http://{{ipaddr}}:9000/?action=streaming", width="90%">
+      {% if video == "on" %}
+      <img src="http://{{ipaddr}}:9000/?action=streaming", width="80%">
+      {% else %}
+      <h1>{{ipaddr}}</h1>
+      {% endif %}
     </div>
     {% endif %}
     <div align="center">
