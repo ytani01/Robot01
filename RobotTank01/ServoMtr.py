@@ -14,14 +14,18 @@ class SG90:
     print(SEC_PULSE)
     
     def __init__(self, pin, pi=''):
+        self.myname = __class__.__name__
+        print(self.myname + ': __init__()')
+        
+        print(self.myname + ': pin =', pin)
+        self.pin = pin
+
         if type(pi) == pigpio.pi:
             self.pi = pi
             self.mypi = False
         else:
             self.pi = pigpio.pi()
             self.mypi = True
-            
-        self.pin = pin
 
         self.cur_pulse = SG90.PULSE_CENTER
         self.set_pulse(self.cur_pulse)
@@ -54,7 +58,7 @@ class SG90:
         
 #####
 def main():
-    Pin = 15
+    Pin = 27
     
     pi = pigpio.pi()
 
@@ -67,10 +71,14 @@ def main():
         print(sm.set_pulse(SG90.PULSE_MIN))
         print(sm.set_pulse(SG90.PULSE_MAX))
         print(sm.set_pulse(SG90.PULSE_MIN))
-        print(sm.set_pulse(1400))
+        time.sleep(1)
+        for a in [1400]:
+            print(sm.set_pulse(a))
+            time.sleep(1)
     else:
         for p in sys.argv:
             print(sm.set_pulse(int(p)))
+            time.sleep(1)
 
 if __name__ == '__main__':
     main()

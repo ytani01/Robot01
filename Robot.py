@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 #
 import pigpio
-import DcMtr
 
 import queue
 import threading
@@ -12,28 +11,16 @@ import os
 
 #####
 
-class RobotTank(threading.Thread):
-    DEF_CONF_FILENAME = 'robot_tank.csv'
+class Robot(threading.Thread):
+    DEF_CONF_FILENAME = 'robot.csv'
     DEF_CONF_FILE = './' + DEF_CONF_FILENAME
-
-    MAX_SPEED_VAL = 100
-    MIN_SPEED_VAL = -MAX_SPEED_VAL
-    
-    DEF_SPEED_VAL={}
-    DEF_SPEED_VAL['off'] 	= [0,0]
-    DEF_SPEED_VAL['stop'] 	= [0,0]
-    DEF_SPEED_VAL['break'] 	= [0,0]
-    DEF_SPEED_VAL['forward']	= [100,100]
-    DEF_SPEED_VAL['backward']	= [-100,-100]
-    DEF_SPEED_VAL['left'] 	= [-100,100]
-    DEF_SPEED_VAL['right'] 	= [100,-100]
 
     def __init__(self, pin, pi='', conf_file=''):
         self.myname = __class__.__name__
         print(self.myname + ': __init__()')
         
         self.pin = pin
-        self.n = len(pin)
+        self.mtr_n = len(pin)
 
         ## Command queue
         self.cmdq = queue.Queue()
@@ -46,8 +33,8 @@ class RobotTank(threading.Thread):
             self.pi = pigpio.pi()
             self.mypi = True
 
-        ## Init DC Motors
-        self.dc_mtr = DcMtr.DcMtrN(self.pi, self.pin)
+        ## InitMotors
+        ## XXXX
 
         ## move_cmd
         self.move_cmd = {}
@@ -62,9 +49,9 @@ class RobotTank(threading.Thread):
         self.move_stat = 'stop'
         
         ## Init speed values
-        self.speed_val = RobotTank.DEF_SPEED_VAL
-
-        self.set_conf_file(conf_file)
+        self.conf_file = conf_file
+        if conf_file == '':
+            self.conf_file = os.environ('HOME') + '/' + Robot.DEF_CONF_FILENAME
         self.conf_load()
 
         ## Stop Motors
@@ -75,12 +62,12 @@ class RobotTank(threading.Thread):
     def __del__(self):
         print(self.myname + ': __del__()')
 
-        print('set_stop()', '\r')
+        print(self.myname + ': move_stop()', '\r')
         self.move_stop()
         if self.mypi:
-            print('self.pi.stop()', '\r')
+            print(self.myname + ': self.pi.stop()', '\r')
             self.pi.stop()
-        print('self.conf_save()', '\r')
+        print(self.myname + ': self.conf_save()', '\r')
         self.conf_save()
 
     ### cmdq
@@ -133,17 +120,9 @@ class RobotTank(threading.Thread):
         return self.speed_val[key][idx]
 
     ### conf_file
-    def set_conf_file(self, conf_file=''):
-        if conf_file == '':
-            conf_file = RobotTank.DEF_CONF_FILE
-        self.conf_file = conf_file
-
     def conf_load(self, conf_file=''):
         if conf_file == '':
             conf_file = self.conf_file
-        
-        if conf_file == '':
-            conf_file = RobotTank.DEF_CONF_FILE
 
         try:
             with open(conf_file, 'r', encoding='utf-8') as f:
@@ -164,9 +143,6 @@ class RobotTank(threading.Thread):
         if conf_file == '':
             conf_file = self.conf_file
         
-        if conf_file == '':
-            conf_file = RobotTank.DEF_CONF_FILE
-
         try:
             with open(self.conf_file, 'w', encoding='utf-8') as f:
                 csv_writer = csv.writer(f, lineterminator='\n')

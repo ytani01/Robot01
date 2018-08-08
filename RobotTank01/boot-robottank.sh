@@ -1,8 +1,8 @@
 #!/bin/sh
 
-WORKDIR=${HOME}/Robot01/RobotCar01
+WORKDIR=${HOME}/Robot01/RobotTank01
 
 cd ${WORKDIR}
 . ./activate
-./RobotCarServer.py 2>&1 &
+./RobotTankServer.py 2>&1 &
 ../robot-http-server.sh 2>&1 &
