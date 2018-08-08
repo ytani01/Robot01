@@ -1,8 +1,0 @@
-#Key,Left Motor,Right Motor
-forward,1690,1210
-left,1420,1425
-right,1525,1530
-backward,1305,1640
-stop,1465,1470
-off,0,0
-break,1470,1475

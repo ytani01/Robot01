@@ -14,8 +14,8 @@ import threading
 #####
 class RobotCar(threading.Thread):
     DEF_CONF_FILENAME = 'robot_car.csv'
-    #DEF_CONF_FILE = os.environ['HOME']+'/'+DEF_CONF_FILENAME
-    DEF_CONF_FILE = './'+DEF_CONF_FILENAME
+    DEF_CONF_FILE = os.environ['HOME']+'/'+DEF_CONF_FILENAME
+    #DEF_CONF_FILE = './'+DEF_CONF_FILENAME
 
     DEF_PULSE_VAL = { 'off':      [0,0], \
                       'stop':     [1480,1480], \
