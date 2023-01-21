@@ -231,9 +231,6 @@ PIN_DC_MOTOR = [[12, 13], [18, 17]]
 
 robot = RobotTank(PIN_DC_MOTOR)
 
-def forward(key_sym):
-    robot.send_cmd('w')
-
 def robot_send(key_sym):
     robot.send_cmd(key_sym)
 
