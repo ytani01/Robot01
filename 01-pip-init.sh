@@ -1,7 +1,7 @@
 #!/bin/sh -x
 #
 ENVDIR=${HOME}/env
-ACTIVATE_CMD=${ENVDIR}/bin/activate
+ACTIVATE_CMD=${VIRTUAL_ENV}/bin/activate
 PIP_PKGS="setuptools wheel pigpio smbus2 readchar flask netifaces"
 
 cd

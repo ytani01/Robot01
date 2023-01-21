@@ -55,8 +55,8 @@ class SG90:
             time.sleep(sec)
 
         return self.cur_pulse
-        
-#####
+
+
 def main():
     Pin = 27
     

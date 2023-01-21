@@ -2,6 +2,7 @@
 #
 import pigpio
 import DcMtr
+import cuilib
 
 import queue
 import threading
@@ -226,10 +227,17 @@ class RobotTank(threading.Thread):
             time.sleep(0.01)
 
 #####
-def main():
-    PIN_DC_MOTOR = [[12, 13], [18, 17]]
+PIN_DC_MOTOR = [[12, 13], [18, 17]]
 
-    robot = RobotTank(PIN_DC_MOTOR)
+robot = RobotTank(PIN_DC_MOTOR)
+
+def forward(key_sym):
+    robot.send_cmd('w')
+
+def robot_send(key_sym):
+    robot.send_cmd(key_sym)
+
+def main():
     robot.start()
     time.sleep(1)
 
@@ -243,6 +251,22 @@ def main():
     time.sleep(1)
     robot.send_cmd('s')
     time.sleep(1)
+    # robot.send_cmd(' ')
+
+    cui = cuilib.Cui()
+
+    cui.add('w', robot_send, 'forward')
+    cui.add('x', robot_send, 'backward')
+    cui.add('a', robot_send, 'rotate left')
+    cui.add('d', robot_send, 'rotate right')
+    cui.add('Ss', robot_send, 'stop')
+    # cui.add(' ', robot_send, 'end')
+    cui.add('hH?', cui.help, 'command help')
+    cui.add(['q', 'Q', 'KEY_ESCAPE'], cui.end, 'quit')
+
+    cui.start()
+    cui.join()    
+    
     robot.send_cmd(' ')
 
 if __name__ == '__main__':
