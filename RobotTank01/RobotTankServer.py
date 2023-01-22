@@ -10,7 +10,7 @@ import os
 
 MyName = os.path.basename(sys.argv[0])
 
-DEF_PIN_DC = [[12, 13], [18, 17]]
+DEF_PIN_DC = [[17, 18], [13, 12]]
 DEF_PIN_SERVO = 22
 DEF_PORT_NUM = 12345
 

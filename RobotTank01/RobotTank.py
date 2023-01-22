@@ -11,7 +11,6 @@ import time
 import sys
 import os
 
-#####
 
 class RobotTank(threading.Thread):
     DEF_CONF_FILENAME = 'robot_tank.csv'
@@ -142,7 +141,7 @@ class RobotTank(threading.Thread):
     def conf_load(self, conf_file=''):
         if conf_file == '':
             conf_file = self.conf_file
-        
+
         if conf_file == '':
             conf_file = RobotTank.DEF_CONF_FILE
 
@@ -156,15 +155,14 @@ class RobotTank(threading.Thread):
                         continue
 
                     self.speed_val[row[0].lower()] = [int(row[1]), int(row[2])]
-                
+
         except(FileNotFoundError):
             print('!! '+conf_file+': not found .. use default value.')
-    
-    
+
     def conf_save(self, conf_file=''):
         if conf_file == '':
             conf_file = self.conf_file
-        
+
         if conf_file == '':
             conf_file = RobotTank.DEF_CONF_FILE
 
@@ -186,7 +184,7 @@ class RobotTank(threading.Thread):
         print(self.myname + ': exec_cmd(\'' + str(cmd) + '\')')
 
         [idx_left, idx_right] = [0, 1]
-        
+
         if cmd in self.move_cmd.keys():
             print(cmd + ': ' + self.move_cmd[cmd])
             self.move(self.move_cmd[cmd])
@@ -197,7 +195,7 @@ class RobotTank(threading.Thread):
             sv = self.change_speed_val(self.move_stat, idx_left, +5)
             self.move(self.move_stat)
             print(self.move_stat, idx_left, sv)
-            
+
         if cmd == 'z':
             sv = self.change_speed_val(self.move_stat, idx_left, -5)
             self.move(self.move_stat)
@@ -227,7 +225,7 @@ class RobotTank(threading.Thread):
             time.sleep(0.01)
 
 #####
-PIN_DC_MOTOR = [[12, 13], [18, 17]]
+PIN_DC_MOTOR = [[17, 18], [13, 12]]
 
 robot = RobotTank(PIN_DC_MOTOR)
 
@@ -239,15 +237,12 @@ def main():
     time.sleep(1)
 
     robot.send_cmd('a')
-    time.sleep(1)
-    robot.send_cmd('S')
-    time.sleep(1)
+    time.sleep(0.5)
     robot.send_cmd('d')
     time.sleep(1)
+    robot.send_cmd('a')
+    time.sleep(0.5)
     robot.send_cmd('S')
-    time.sleep(1)
-    robot.send_cmd('s')
-    time.sleep(1)
     # robot.send_cmd(' ')
 
     cui = cuilib.Cui()
